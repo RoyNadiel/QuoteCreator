@@ -33,6 +33,7 @@ export interface SidebarProps {
   text: string;
   isDownloading: boolean;
   handleDownload: () => void;
+  setShowPreview: (bool: boolean) => void;
 }
 
 export const Sidebar = ({
@@ -56,6 +57,7 @@ export const Sidebar = ({
   text,
   isDownloading,
   handleDownload,
+  setShowPreview,
 }: SidebarProps) => {
   return (
     <div
@@ -232,6 +234,14 @@ export const Sidebar = ({
             ))}
           </select>
         </div>
+
+        <button
+          onClick={() => setShowPreview(true)}
+          disabled={!text.trim()}
+          className="w-full bg-sky-500 text-white py-4 px-2 rounded-lg font-medium hover:bg-sky-700 disabled:bg-sky-200 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-sm"
+        >
+          Previsualización
+        </button>
 
         <button
           onClick={handleDownload}

@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { loadGoogleFont } from "./utils/fonts";
-
 import { RainBackground } from "./components/RainBackground";
 import { Sidebar } from "./components/Sidebar";
 import { aspectRatioOptions } from "./constants/options";
@@ -22,8 +21,8 @@ function App() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-  
+  const previewRef = useRef<HTMLDivElement>(null);
+
   // Cargar fuentes si son de Google al cambiar
   useEffect(() => {
     loadGoogleFont(quoteFontFamily);
@@ -47,13 +46,13 @@ function App() {
       // Esperar a que el DOM se actualice y el elemento se renderice
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      if (!contentRef.current) {
-        console.error("contentRef.current (Elemento de captura) es null");
+      if (!previewRef.current) {
+        console.error("previewRef.current (Elemento de Captura) es null");
         return;
       }
 
       console.log("Capturando con html2canvas...");
-      const canvas = await html2canvas(contentRef.current, {
+      const canvas = await html2canvas(previewRef.current, {
         backgroundColor: quoteBackgroundColor,
         scale: 4, // Mayor resolución para mejor calidad
         logging: true,
@@ -82,7 +81,7 @@ function App() {
       console.error("Error al descargar:", error);
     } finally {
       // Esperar un momento antes de ocultar la preview
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setShowPreview(false);
       setIsDownloading(false);
     }
@@ -129,6 +128,7 @@ function App() {
         text={text}
         isDownloading={isDownloading}
         handleDownload={handleDownload}
+        setShowPreview={setShowPreview}
       />
 
       {menuOpen && (
@@ -145,8 +145,9 @@ function App() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Comienza a escribir..."
-            className="w-full h-[60vh] px-6 py-8 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/60 z-20 transition-colors duration-300"
+            className="w-fit h-[80vh] px-6 py-8 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/60 z-20 transition-colors duration-300 scrollbar-hide"
             style={{
+              aspectRatio: aspectRatio.value,
               fontFamily: quoteFontFamily,
               fontSize: `${fontSize}px`,
               textAlign: textAlign as any,
@@ -174,54 +175,62 @@ function App() {
               </p>
             </div>
           )}
+        </div>
+      </div>
 
-          {showPreview && (
-            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeIn p-4">
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeIn p-4">
+          <div
+            id="download-capture"
+            ref={previewRef}
+            className="relative p-12 rounded-xl shadow-2xl animate-scaleIn flex flex-col justify-center"
+            style={{
+              aspectRatio: aspectRatio.value,
+              backgroundColor: quoteBackgroundColor,
+              color: getTextColor(quoteBackgroundColor),
+              width: `${aspectRatio.width}px` + 20,
+              height: `${aspectRatio.height}px` + 20,
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+            }}
+          >
+            <button
+              name="xmark"
+              className="absolute top-2 right-5 py-3 px-1.5 bg-transparent text-black"
+              onClick={() => setShowPreview(false)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div
+              className="w-full h-full whitespace-pre-wrap break-words"
+              style={{
+                fontFamily: quoteFontFamily,
+                fontSize: `${fontSize}px`,
+                textAlign: textAlign as any,
+              }}
+            >
+              {text}
+            </div>
+            {author && (
               <div
-                id="download-capture"
-                ref={contentRef}
-                className="p-12 rounded-xl shadow-2xl animate-scaleIn flex flex-col justify-center"
-                style={{
-                  backgroundColor: quoteBackgroundColor,
-                  color: getTextColor(quoteBackgroundColor),
-                  width: `${aspectRatio.width}px`,
-                  height: `${aspectRatio.height}px`,
-                  maxWidth: "90vw",
-                  maxHeight: "90vh",
-                }}
+                className="mt-8 w-full pt-4 border-t"
+                style={{ borderColor: getTextColor(quoteBackgroundColor) }}
               >
-                <div
-                  className="w-full whitespace-pre-wrap wrap-break-words leading-relaxed"
+                <p
+                  className="italic ml-[80%]"
                   style={{
-                    fontFamily: quoteFontFamily,
-                    fontSize: `${fontSize}px`,
+                    fontFamily: autorFontFamily,
+                    fontSize: `${Math.max(fontSize * 0.9, 12)}px`,
                     textAlign: textAlign as any,
                   }}
                 >
-                  {text}
-                </div>
-                {author && (
-                  <div
-                    className="mt-8 w-full pt-4 border-t"
-                    style={{ borderColor: getTextColor(quoteBackgroundColor) }}
-                  >
-                    <p
-                      className="italic ml-[80%]"
-                      style={{
-                        fontFamily: autorFontFamily,
-                        fontSize: `${Math.max(fontSize * 0.9, 12)}px`,
-                        textAlign: textAlign as any,
-                      }}
-                    >
-                      — {author}
-                    </p>
-                  </div>
-                )}
+                  — {author}
+                </p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -37,9 +37,9 @@ export const colorOptions = [
 ];
 
 export const aspectRatioOptions: AspectRatioOption[] = [
-  { name: "Cuadrado (1:1)", value: "1:1", width: 800, height: 800 },
-  { name: "Instagram Portrait (4:5)", value: "4:5", width: 800, height: 1000 },
-  { name: "Horizontal (16:9)", value: "16:9", width: 1200, height: 675 },
-  { name: "Stories (9:16)", value: "9:16", width: 607, height: 1080 },
-  { name: "Vertical (3:4)", value: "3:4", width: 800, height: 1067 },
+  { name: "Cuadrado (1:1)", value: "1/1", width: 800, height: 800 },
+  { name: "Instagram Portrait (4:5)", value: "4/5", width: 800, height: 1000 },
+  { name: "Horizontal (16:9)", value: "16/9", width: 1200, height: 675 },
+  { name: "Stories (9:16)", value: "9/16", width: 607, height: 1080 },
+  { name: "Vertical (3:4)", value: "3/4", width: 800, height: 1067 },
 ];

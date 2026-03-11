@@ -64,3 +64,9 @@
   --font-jetbrans-mono: Jetbrans Mono, "mono";
   --font-mancondo: Mancondo, "serif";
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
