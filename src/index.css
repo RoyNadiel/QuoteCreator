@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: Inconsolata;
+  src: url("./assets/fonts/Inconsolata-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Monserrat Alternates;
+  src: url("./assets/fonts/MontserratAlternates-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Libertinus Mono;
+  src: url("./assets/fonts/LibertinusMono-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Fira Code;
+  src: url("./assets/fonts/FiraCode-VariableFont_wght.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: League Spartan;
+  src: url("./assets/fonts/LeagueSpartan-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Audiowide;
+  src: url("./assets/fonts/Audiowide-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Bellota;
+  src: url("./assets/fonts/Bellota-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: FacultyGlyphic;
+  src: url("./assets/fonts/FacultyGlyphic-Regular.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Jetbrans Mono;
+  src: url("./assets/fonts/JetBrainsMono-VariableFont_wght.woff2");
+  display: swap;
+}
+@font-face {
+  font-family: Mancondo;
+  src: url("./assets/fonts/Macondo-Regular.woff2");
+  display: swap;
+}
+
+@theme {
+  /* FUENTES */
+  --font-inconsolata: Inconsolata, "mono";
+  --font-libertinus: Libertinus Mono, "sans";
+  --font-montserrat-alt: Monserrat Alternates, "sans";
+  --font-fira-code: Fira Code, "mono";
+  --font-league-spartan: League Spartan, "serif";
+  --font-audiowide: Audiowide, "sans";
+  --font-bellota: Bellota, "serif";
+  --font-faculty-glyphic: FacultyGlyphic, "serif";
+  --font-jetbrans-mono: Jetbrans Mono, "mono";
+  --font-mancondo: Mancondo, "serif";
+}
