@@ -10,6 +10,12 @@
   src: url("./assets/fonts/MontserratAlternates-Regular.woff2");
   display: swap;
 }
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.1em; /* Ajuste para que se vea más compacto en vertical */
+}
 @font-face {
   font-family: Libertinus Mono;
   src: url("./assets/fonts/LibertinusMono-Regular.woff2");

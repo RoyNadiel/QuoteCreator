@@ -15,14 +15,20 @@ function App() {
   const [quoteBackgroundColor, setQuoteBackgroundColor] = useState("#FFF9F0");
   const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
   const [autorFontFamily, setAutorFontFamily] = useState("Serif");
-  const [fontSize, setFontSize] = useState(24);
+  const [fontSize, setFontSize] = useState(18);
   const [textAlign, setTextAlign] = useState<TextAlign>("center");
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
   const [pageBg, setPageBg] = useState("rain");
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const previewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Cargar fuentes si son de Google al cambiar
   useEffect(() => {
@@ -102,7 +108,7 @@ function App() {
     >
       {pageBg === "rain" && <RainBackground />}
       {isMesh && <MeshBackground colors={currentBgOption.meshColors} />}
-
+      {/* Boton de Menu */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={`fixed top-4 left-4 z-50 p-2 hover:shadow-md rounded-lg transition-all ${
@@ -145,14 +151,43 @@ function App() {
         />
       )}
 
-      <div className="flex-1 flex items-center justify-center p-4 relative z-10">
-        <div className="w-full flex flex-col items-center">
+      <div className="flex-1 flex items-center justify-center z-10 relative">
+        {/* Decorative Side Metadata - Left */}
+        <div
+          className="absolute -left-20 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-8 opacity-40 vertical-text"
+          style={{ color: getPageTextColor(pageBg) }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase font-mono">Input Active</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+          </div>
+          <span className="text-xs uppercase font-mono">Studio V1</span>
+        </div>
+
+        {/* Decorative Side Metadata - Right */}
+        <div
+          className="absolute -right-20 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-8 opacity-40 vertical-text"
+          style={{ color: getPageTextColor(pageBg) }}
+        >
+          <span className="text-xs uppercase font-mono">
+            {text.length} Characters
+          </span>
+          <span className="text-xs uppercase font-mono">
+            {aspectRatio.name.split(" ")[0]}
+          </span>
+        </div>
+        <div
+          className="w-full h-full flex flex-col items-center border-2 z-50 p-4"
+          style={{
+            borderColor: `${getPageTextColor(pageBg)}1a`,
+          }}
+        >
           <textarea
             name="Quote"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Comienza a escribir..."
-            className="w-fit h-[80vh] border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/60 z-20 transition-colors duration-300 scrollbar-hide"
+            className="w-fit h-[80vh] border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/80 z-20 transition-colors duration-300 scrollbar-hide"
             style={{
               aspectRatio: aspectRatio.value,
               fontFamily: quoteFontFamily,
@@ -164,15 +199,25 @@ function App() {
 
           {author && (
             <div
-              className="w-full max-w-[80%] pt-4 border-t opacity-80 z-20 transition-colors duration-300 mb-20"
+              className="w-full pt-4 border-t opacity-80 z-20 transition-colors duration-300 mb-10 flex justify-between items-center"
               style={{
-                borderColor: getPageTextColor(pageBg),
+                borderColor: `${getPageTextColor(pageBg)}1a`,
                 color: getPageTextColor(pageBg),
                 width: `${aspectRatio.width}px`,
               }}
             >
+              <div className="text-xs font-mono tracking-widest opacity-60">
+                {currentTime.toLocaleTimeString([], {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })}
+              </div>
               <p
-                className="italic ml-[80%]"
+                className="italic"
                 style={{
                   fontFamily: autorFontFamily,
                   fontSize: `${Math.max(fontSize * 0.8, 14)}px`,
@@ -225,11 +270,21 @@ function App() {
             </div>
             {author && (
               <div
-                className="mt-8 w-full pt-4 border-t"
+                className="mt-8 w-full pt-4 border-t flex justify-between items-center"
                 style={{ borderColor: getQuoteTextColor(quoteBackgroundColor) }}
               >
+                <div className="text-xs font-mono tracking-widest opacity-60">
+                  {currentTime.toLocaleTimeString([], {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  })}
+                </div>
                 <p
-                  className="italic ml-[80%]"
+                  className="italic"
                   style={{
                     fontFamily: autorFontFamily,
                     fontSize: `${Math.max(fontSize * 0.9, 12)}px`,
