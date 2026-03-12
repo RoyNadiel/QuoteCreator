@@ -1,73 +1,46 @@
-# React + TypeScript + Vite
+# 🎨 QuoteCreator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Una aplicación web moderna y elegante para crear y descargar imágenes de citas personalizadas con un diseño.
 
-Currently, two official plugins are available:
+## ✨ Características
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Diseño Minimalista**: Interfaz limpia con efectos de desenfocado (glassmorphism) y sombras profundas.
+- **Temas de Fondo Dinámicos**:
+  - Colores sólidos suaves (pastel).
+  - Gradientes modernos.
+  - Efecto de lluvia realista y animado.
+- **Personalización Completa**:
+  - Selector de fuentes dinámico (Carga asíncrona de fuentes).
+  - Ajuste de tamaño de fuente y alineación de texto.
+  - Soporte para autor con estilos independientes.
+- **Formatos de Imagen**: Exportación en múltiples relaciones de aspecto (1:1 Cuadrado, 4:5 Portrait, 16:9 Horizontal, 9:16 Stories).
+- **Previsualización en Tiempo Real**: Modal de previsualización con animaciones suaves de entrada y salida.
+- **Descarga de Alta Calidad**: Generación de imágenes optimizadas para redes sociales.
 
-## React Compiler
+## 🚀 Tecnologías
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Core**: React 19 + TypeScript
+- **Bundler**: Vite
+- **Estilos**: Tailwind CSS 4.1.x
+- **Iconos**: Lucide React
+- **Captura de Pantalla**: html2canvas
 
-## Expanding the ESLint configuration
+## 🛠️ Instalación y Desarrollo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Clona el repositorio:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/RoyNadiel/QuoteCreator.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Instala las dependencias:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+pnpm install
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Inicia el servidor de desarrollo:
+
+```bash
+pnpm dev
 ```
