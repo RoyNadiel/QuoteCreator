@@ -207,7 +207,7 @@ function App() {
               <X className="w-6 h-6" />
             </button>
             <div
-              className="w-full h-full whitespace-pre-wrap break-words flex items-center justify-center"
+              className="w-full h-full whitespace-pre-wrap break-words"
               style={{
                 fontFamily: quoteFontFamily,
                 fontSize: `${fontSize}px`,

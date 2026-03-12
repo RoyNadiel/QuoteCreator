@@ -110,7 +110,7 @@ export const Sidebar = ({
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Nombre del autor"
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder font-medium"
+            className="w-full px-4 py-3 bg-slate-50 text-black border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder font-medium"
           />
         </div>
 
@@ -180,7 +180,9 @@ export const Sidebar = ({
                   : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
               }`}
             >
-              <AlignLeft className="w-5 h-5 mx-auto" />
+              <AlignLeft
+                className={`w-5 h-5 mx-auto ${textAlign === "left" ? "text-white" : "text-black"}`}
+              />
             </button>
             <button
               onClick={() => setTextAlign("center")}
@@ -190,7 +192,9 @@ export const Sidebar = ({
                   : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
               }`}
             >
-              <AlignCenter className="w-5 h-5 mx-auto" />
+              <AlignCenter
+                className={`w-5 h-5 mx-auto ${textAlign === "center" ? "text-white" : "text-black"}`}
+              />
             </button>
             <button
               onClick={() => setTextAlign("right")}
@@ -200,7 +204,9 @@ export const Sidebar = ({
                   : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
               }`}
             >
-              <AlignRight className="w-5 h-5 mx-auto" />
+              <AlignRight
+                className={`w-5 h-5 mx-auto ${textAlign === "right" ? "text-white" : "text-black"}`}
+              />
             </button>
           </div>
         </div>
@@ -239,7 +245,7 @@ export const Sidebar = ({
         <button
           onClick={handleDownload}
           disabled={!text.trim() || isDownloading}
-          className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-black active:scale-[0.98] disabled:bg-slate-100 disabled disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+          className="w-full bg-indigo-900 text-white py-4 rounded-xl font-bold hover:bg-indigo-950 active:scale-[0.98] disabled:bg-slate-500 disabled disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10"
         >
           <Download className="w-5 h-5" />
           {isDownloading ? "Descargando..." : "Descargar"}
