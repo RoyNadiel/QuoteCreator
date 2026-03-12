@@ -7,6 +7,8 @@ import {
   AlignRight,
   Monitor,
   Layout,
+  PaletteIcon,
+  CloudHail,
 } from "lucide-react";
 import {
   pageBackgroundOptions,
@@ -66,7 +68,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <div
-      className={`fixed top-0 left-0 h-screen w-80 bg-transparent backdrop-blur-md border-r border-slate-100 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
+      className={`fixed top-0 left-0 h-screen w-80 bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
         menuOpen ? "translate-x-0" : "-translate-x-full"
       }`}
       style={{
@@ -80,23 +82,38 @@ export const Sidebar = ({
             <h2 className="text-lg font-medium">Tema de Fondo</h2>
           </div>
           <div className="grid grid-cols-5 gap-2">
-            {pageBackgroundOptions.map((color) => (
-              <button
-                key={`bg-${color.value}`}
-                onClick={() => setPageBg(color.value)}
-                className={`w-full aspect-square rounded-lg transition-all hover:scale-110 ${
-                  pageBg === color.value
-                    ? "ring-2 ring-current ring-offset-2"
-                    : "ring-1 ring-slate-200"
-                }`}
-                style={{
-                  background: color.value === "rain" ? "#0f172a" : color.value,
-                }}
-                title={color.name}
-              >
-                {color.value === "rain" && <span className="text-xs">🌧️</span>}
-              </button>
-            ))}
+            {pageBackgroundOptions.map((color) => {
+              const isMesh = !!color.meshColors;
+              return (
+                <button
+                  key={`bg-${color.value}`}
+                  onClick={() => setPageBg(color.value)}
+                  className={`w-full aspect-square rounded-lg transition-all hover:scale-110 flex items-center justify-center ${
+                    pageBg === color.value
+                      ? "ring-2 ring-current ring-offset-2"
+                      : "ring-1 ring-slate-200"
+                  }`}
+                  style={{
+                    background:
+                      color.value === "rain" || isMesh
+                        ? color.meshColors?.base || "#0f172a"
+                        : color.value,
+                  }}
+                  title={color.name}
+                >
+                  {color.value === "rain" && (
+                    <span className="text-xs">
+                      <CloudHail className="w-4 h-4" />
+                    </span>
+                  )}
+                  {isMesh && (
+                    <span className="text-xs">
+                      <PaletteIcon className="w-4 h-4 text-gray-300" />
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -147,7 +164,7 @@ export const Sidebar = ({
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Palette className="w-5 h-5" />
-            <h2 className="text-lg font-medium">Color de Fondo</h2>
+            <h2 className="text-lg font-medium">Fondo del Escrito</h2>
           </div>
           <div className="grid grid-cols-5 gap-2">
             {quoteColorOptions.map((color) => (

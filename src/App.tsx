@@ -3,8 +3,9 @@ import { Menu, X } from "lucide-react";
 import html2canvas from "html2canvas";
 import { loadGoogleFont } from "./utils/fonts";
 import { RainBackground } from "./components/RainBackground";
+import { MeshBackground } from "./components/MeshBackground";
 import { Sidebar } from "./components/Sidebar";
-import { aspectRatioOptions } from "./constants/options";
+import { aspectRatioOptions, pageBackgroundOptions } from "./constants/options";
 import { getQuoteTextColor, getPageTextColor } from "./utils/colors";
 import type { TextAlign } from "./types";
 
@@ -87,14 +88,20 @@ function App() {
     }
   };
 
+  const currentBgOption = pageBackgroundOptions.find(
+    (opt) => opt.value === pageBg,
+  );
+  const isMesh = !!currentBgOption?.meshColors;
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-500"
       style={{
-        background: pageBg === "rain" ? "#0f172a" : pageBg,
+        background: pageBg === "rain" || isMesh ? "#0f172a" : pageBg,
       }}
     >
       {pageBg === "rain" && <RainBackground />}
+      {isMesh && <MeshBackground colors={currentBgOption.meshColors} />}
 
       <button
         onClick={() => setMenuOpen(!menuOpen)}

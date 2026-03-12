@@ -21,22 +21,97 @@ export const fontOptions = [
 export const pageBackgroundOptions: BackgroundOption[] = [
   // Patterns/Special
   { name: "Lluvia", value: "rain", isDark: true },
-  // Soft Vibrant Solids
-  { name: "Azul Suave", value: "#60a5fa", isDark: false },
-  { name: "Rojo Suave", value: "#f87171", isDark: false },
-  { name: "Verde Suave", value: "#34d399", isDark: false },
-  { name: "Naranja Suave", value: "#fbbf24", isDark: false },
-  { name: "Violeta Suave", value: "#a78bfa", isDark: false },
-  // Elegant Dark Solids
+
+  // Mesh Dinámicos (Animated)
+  {
+    name: "Classic Mesh",
+    value: "mesh-classic",
+    isDark: true,
+    meshColors: {
+      blob1: "bg-blue-600/30",
+      blob2: "bg-purple-600/25",
+      blob3: "bg-indigo-800/20",
+      blob4: "bg-sky-500/20",
+      base: "bg-slate-950",
+    },
+  },
+  {
+    name: "Aurora Night",
+    value: "mesh-dark-purple",
+    isDark: true,
+    meshColors: {
+      blob1: "bg-emerald-500/20",
+      blob2: "bg-indigo-600/30",
+      blob3: "bg-blue-900/40",
+      blob4: "bg-teal-400/10",
+      base: "bg-gray-950",
+    },
+  },
+  {
+    name: "Emerald Deep",
+    value: "mesh-dark-green",
+    isDark: true,
+    meshColors: {
+      blob1: "bg-green-600/20",
+      blob2: "bg-emerald-700/25",
+      blob3: "bg-teal-800/30",
+      blob4: "bg-lime-500/10",
+      base: "bg-green-950",
+    },
+  },
+  {
+    name: "Rose Glow",
+    value: "mesh-pastel-pink",
+    isDark: false,
+    meshColors: {
+      blob1: "bg-rose-200/50",
+      blob2: "bg-pink-100/40",
+      blob3: "bg-fuchsia-100/30",
+      blob4: "bg-white/40",
+      base: "bg-rose-50",
+    },
+  },
+  {
+    name: "Soft Sunshine",
+    value: "mesh-pastel-yellow",
+    isDark: false,
+    meshColors: {
+      blob1: "bg-amber-100/60",
+      blob2: "bg-yellow-50/50",
+      blob3: "bg-orange-100/30",
+      blob4: "bg-white/60",
+      base: "bg-orange-50",
+    },
+  },
+
+  // Pastel Gradients
+  {
+    name: "Sunset Pastel",
+    value: "linear-gradient(135deg, #fcd34d, #fda4af)",
+    isDark: false,
+  },
+  {
+    name: "Ocean Pastel",
+    value: "linear-gradient(135deg, #bae6fd, #e0e7ff)",
+    isDark: false,
+  },
+  {
+    name: "Lavender Pastel",
+    value: "linear-gradient(135deg, #e0e7ff, #f5f3ff)",
+    isDark: false,
+  },
+  {
+    name: "Dreamy",
+    value: "linear-gradient(135deg, #fdf2f8, #f5f3ff)",
+    isDark: false,
+  },
+
+  // Elegant Dark
   { name: "Deep Navy", value: "#1e293b", isDark: true },
   { name: "Deep Slate", value: "#334155", isDark: true },
   { name: "Deep Forest", value: "#064e3b", isDark: true },
   { name: "Charcoal", value: "#1a1a1a", isDark: true },
-  // Pastel Gradients
-  { name: "Sunset Pastel", value: "linear-gradient(135deg, #fcd34d, #fda4af)", isDark: false },
-  { name: "Ocean Pastel", value: "linear-gradient(135deg, #bae6fd, #e0e7ff)", isDark: false },
-  { name: "Lavender Pastel", value: "linear-gradient(135deg, #e0e7ff, #f5f3ff)", isDark: false },
-  { name: "Dreamy", value: "linear-gradient(135deg, #fdf2f8, #f5f3ff)", isDark: false },
+
   // Classic/Base
   { name: "Crema", value: "#FFF9F0", isDark: false },
   { name: "Blanco Puro", value: "#FFFFFF", isDark: false },

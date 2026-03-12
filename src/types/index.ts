@@ -11,4 +11,11 @@ export interface BackgroundOption {
   name: string;
   value: string;
   isDark?: boolean;
+  meshColors?: {
+    blob1: string;
+    blob2: string;
+    blob3: string;
+    blob4: string;
+    base: string;
+  };
 }
