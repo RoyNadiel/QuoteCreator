@@ -5,15 +5,15 @@ import { loadGoogleFont } from "./utils/fonts";
 import { RainBackground } from "./components/RainBackground";
 import { Sidebar } from "./components/Sidebar";
 import { aspectRatioOptions } from "./constants/options";
-import { getTextColor, getPageTextColor } from "./utils/colors";
+import { getQuoteTextColor, getPageTextColor } from "./utils/colors";
 import type { TextAlign } from "./types";
 
 function App() {
   const [text, setText] = useState("");
   const [author, setAuthor] = useState("");
   const [quoteBackgroundColor, setQuoteBackgroundColor] = useState("#FFF9F0");
-  const [quoteFontFamily, setQuoteFontFamily] = useState("serif");
-  const [autorFontFamily, setAutorFontFamily] = useState("serif");
+  const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
+  const [autorFontFamily, setAutorFontFamily] = useState("Serif");
   const [fontSize, setFontSize] = useState(24);
   const [textAlign, setTextAlign] = useState<TextAlign>("center");
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
@@ -89,9 +89,9 @@ function App() {
 
   return (
     <div
-      className="min-h-screen flex flex-col relative overflow-hidden transition-colors duration-500"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-500"
       style={{
-        backgroundColor: pageBg === "rain" ? "#0f172a" : pageBg,
+        background: pageBg === "rain" ? "#0f172a" : pageBg,
       }}
     >
       {pageBg === "rain" && <RainBackground />}
@@ -133,19 +133,19 @@ function App() {
 
       {menuOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30"
+          className="fixed inset-0 z-30"
           onClick={() => setMenuOpen(false)}
         />
       )}
 
       <div className="flex-1 flex items-center justify-center p-4 relative z-10">
-        <div className="w-full max-w-4xl flex flex-col items-center">
+        <div className="w-full flex flex-col items-center">
           <textarea
             name="Quote"
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Comienza a escribir..."
-            className="w-fit h-[80vh] px-6 py-8 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/60 z-20 transition-colors duration-300 scrollbar-hide"
+            className="w-fit h-[80vh] border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/60 z-20 transition-colors duration-300 scrollbar-hide"
             style={{
               aspectRatio: aspectRatio.value,
               fontFamily: quoteFontFamily,
@@ -161,6 +161,7 @@ function App() {
               style={{
                 borderColor: getPageTextColor(pageBg),
                 color: getPageTextColor(pageBg),
+                width: `${aspectRatio.width}px`,
               }}
             >
               <p
@@ -168,7 +169,7 @@ function App() {
                 style={{
                   fontFamily: autorFontFamily,
                   fontSize: `${Math.max(fontSize * 0.8, 14)}px`,
-                  textAlign: textAlign as any,
+                  textAlign: "right",
                 }}
               >
                 — {author}
@@ -179,30 +180,34 @@ function App() {
       </div>
 
       {showPreview && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fadeIn p-4">
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50 p-4"
+          onClick={() => setShowPreview(false)}
+        >
           <div
             id="download-capture"
             ref={previewRef}
-            className="relative p-12 rounded-xl shadow-2xl animate-scaleIn flex flex-col justify-center"
+            onClick={(e) => e.stopPropagation()}
+            className={`relative p-12 rounded-xl shadow-2xl ${showPreview ? "animate-scaleIn" : "animate-scaleOut"} flex flex-col justify-center`}
             style={{
               aspectRatio: aspectRatio.value,
               backgroundColor: quoteBackgroundColor,
-              color: getTextColor(quoteBackgroundColor),
-              width: `${aspectRatio.width}px` + 20,
-              height: `${aspectRatio.height}px` + 20,
+              color: getQuoteTextColor(quoteBackgroundColor),
+              width: `${aspectRatio.width}px`,
+              height: `${aspectRatio.height}px`,
               maxWidth: "90vw",
               maxHeight: "90vh",
             }}
           >
             <button
               name="xmark"
-              className="absolute top-2 right-5 py-3 px-1.5 bg-transparent text-black"
+              className="absolute top-4 right-6 p-2 text-current opacity-40 hover:opacity-100 transition-opacity"
               onClick={() => setShowPreview(false)}
             >
               <X className="w-6 h-6" />
             </button>
             <div
-              className="w-full h-full whitespace-pre-wrap break-words"
+              className="w-full h-full whitespace-pre-wrap break-words flex items-center justify-center"
               style={{
                 fontFamily: quoteFontFamily,
                 fontSize: `${fontSize}px`,
@@ -214,14 +219,14 @@ function App() {
             {author && (
               <div
                 className="mt-8 w-full pt-4 border-t"
-                style={{ borderColor: getTextColor(quoteBackgroundColor) }}
+                style={{ borderColor: getQuoteTextColor(quoteBackgroundColor) }}
               >
                 <p
                   className="italic ml-[80%]"
                   style={{
                     fontFamily: autorFontFamily,
                     fontSize: `${Math.max(fontSize * 0.9, 12)}px`,
-                    textAlign: textAlign as any,
+                    textAlign: "right",
                   }}
                 >
                   — {author}

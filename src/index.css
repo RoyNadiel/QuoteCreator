@@ -67,6 +67,14 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+.scrollbar-hide {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(120vh);
+  }
 }

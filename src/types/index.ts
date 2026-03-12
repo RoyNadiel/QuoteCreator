@@ -6,3 +6,9 @@ export interface AspectRatioOption {
   width: number;
   height: number;
 }
+
+export interface BackgroundOption {
+  name: string;
+  value: string;
+  isDark?: boolean;
+}

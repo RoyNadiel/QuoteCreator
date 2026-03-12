@@ -73,9 +73,12 @@ export const FontPicker = ({ label, value, onChange }: FontPickerProps) => {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 border border-slate-200 rounded-lg bg-white hover:border-slate-300 transition-all text-left"
+        className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all text-left"
       >
-        <span className="truncate" style={{ fontFamily: value }}>
+        <span
+          className="truncate text-slate-700 font-medium"
+          style={{ fontFamily: value }}
+        >
           {currentFontName}
         </span>
         <ChevronDown
@@ -84,15 +87,15 @@ export const FontPicker = ({ label, value, onChange }: FontPickerProps) => {
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-fadeIn">
-          <div className="p-2 border-b border-slate-100 flex items-center gap-2">
-            <Search className="w-4 h-4 text-slate-400 ml-2" />
+        <div className="absolute z-50 w-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] overflow-hidden transition-all">
+          <div className="p-3 border-b border-slate-50 flex items-center gap-2 bg-slate-50/50">
+            <Search className="w-4 h-4 text-slate-400 ml-1" />
             <input
               type="text"
               placeholder="Buscar fuente de google..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full p-2 outline-none text-sm placeholder:text-slate-400"
+              className="w-full bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 font-medium"
               autoFocus
             />
           </div>
@@ -102,9 +105,14 @@ export const FontPicker = ({ label, value, onChange }: FontPickerProps) => {
                 <button
                   key={font.value}
                   onClick={() => handleSelect(font)}
-                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between px-4 py-3.5 hover:bg-slate-50 transition-colors text-left text-slate-700"
                 >
-                  <span style={{ fontFamily: font.value }}>{font.name}</span>
+                  <span
+                    className="font-medium"
+                    style={{ fontFamily: font.value }}
+                  >
+                    {font.name}
+                  </span>
                   {value === font.value && (
                     <Check className="w-4 h-4 text-blue-500" />
                   )}
