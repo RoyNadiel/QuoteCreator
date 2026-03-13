@@ -1,29 +1,38 @@
 # 🎨 QuoteCreator
 
-Una aplicación web moderna y elegante para crear y descargar imágenes de citas personalizadas con un diseño.
+Una aplicación web moderna y elegante para crear y descargar imágenes de citas personalizadas.
 
 ## ✨ Características
 
-- **Diseño Minimalista**: Interfaz limpia con efectos de desenfocado (glassmorphism) y sombras profundas.
-- **Temas de Fondo Dinámicos**:
-  - Colores sólidos suaves (pastel).
-  - Gradientes modernos.
-  - Efecto de lluvia realista y animado.
+- **Diseño Minimalista**: Interfaz limpia con efectos de glassmorphism, sombras profundas y decoraciones tipográficas.
+- **Temas de Fondo Dinámicos**: El fondo seleccionado se aplica tanto al lienzo de edición como a la imagen descargada.
+  - 🌧️ Efecto de lluvia animado.
+  - 🎨 Mesh gradients animados (Aurora Night, Emerald Deep, Rose Glow, Soft Sunshine, Classic Mesh).
+  - 🌈 Gradientes CSS suaves (Sunset Pastel, Ocean Pastel, Lavender, Dreamy).
+  - 🎨 Colores sólidos (tonos oscuros elegantes y claros clásicos).
 - **Personalización Completa**:
-  - Selector de fuentes dinámico (Carga asíncrona de fuentes).
-  - Ajuste de tamaño de fuente y alineación de texto.
-  - Soporte para autor con estilos independientes.
-- **Formatos de Imagen**: Exportación en múltiples relaciones de aspecto (1:1 Cuadrado, 4:5 Portrait, 16:9 Horizontal, 9:16 Stories).
-- **Previsualización en Tiempo Real**: Modal de previsualización con animaciones suaves de entrada y salida.
-- **Descarga de Alta Calidad**: Generación de imágenes optimizadas para redes sociales.
+  - Selector de fuentes dinámico con carga asíncrona desde Google Fonts y fuentes locales.
+  - Ajuste manual de tamaño de fuente y alineación de texto (izquierda, centro, derecha).
+  - Campo de autor con fuente independiente.
+  - Tamaño de fuente sugerido automáticamente al cambiar el formato de la imagen.
+- **Formatos de Exportación**:
+  - 🟥 Cuadrado (1:1) — 800×800 px
+  - 📱 Instagram Portrait (4:5) — 800×1000 px
+  - 🖥️ Horizontal (16:9) — 1200×675 px
+  - 📲 Stories (9:16) — 607×1080 px
+  - 📄 Vertical (3:4) — 800×1067 px
+- **Previsualización en Tiempo Real**: Modal con animación de entrada suave para revisar la imagen antes de descargar.
+- **Descarga Fiel al Original**: La imagen descargada replica exactamente el fondo, el texto y las proporciones del lienzo, con escalado proporcional de tipografía y padding.
 
 ## 🚀 Tecnologías
 
-- **Core**: React 19 + TypeScript
-- **Bundler**: Vite
-- **Estilos**: Tailwind CSS 4.1.x
-- **Iconos**: Lucide React
-- **Captura de Pantalla**: html2canvas
+| Tecnología | Uso |
+|---|---|
+| React 19 + TypeScript | UI y lógica |
+| Vite | Bundler y dev server |
+| Tailwind CSS 4.1.x | Estilos utilitarios |
+| Lucide React | Iconografía |
+| html2canvas | Captura y exportación de imagen |
 
 ## 🛠️ Instalación y Desarrollo
 
@@ -43,4 +52,27 @@ pnpm install
 
 ```bash
 pnpm dev
+```
+
+4. Abre [http://localhost:5173](http://localhost:5173) en tu navegador.
+
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── components/
+│   ├── AuthorFooter.tsx     # Pie de autor en lienzo y preview
+│   ├── Canvas.tsx           # Lienzo editor + modal de preview/descarga
+│   ├── DecorativeSidebars.tsx
+│   ├── FontPicker.tsx
+│   ├── MeshBackground.tsx   # Fondos mesh animados
+│   ├── RainBackground.tsx   # Fondo de lluvia animada
+│   └── Sidebar.tsx          # Panel de opciones
+├── constants/
+│   └── options.ts           # Opciones de fuentes, fondos y formatos
+├── types/
+│   └── index.ts
+└── utils/
+    ├── colors.ts            # Lógica de color de texto/fondo adaptativo
+    └── fonts.ts             # Carga dinámica de Google Fonts
 ```

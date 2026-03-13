@@ -1,7 +1,6 @@
 import { DecorativeSidebars } from "./DecorativeSidebars";
 import { AuthorFooter } from "./AuthorFooter";
 import { X } from "lucide-react";
-import { getQuoteTextColor } from "../utils/colors";
 import type { AspectRatioOption } from "../types";
 
 interface CanvasProps {
@@ -15,11 +14,11 @@ interface CanvasProps {
   aspectRatio: AspectRatioOption;
   pageTextColor: string;
   quoteBackgroundColor: string;
+  quoteTextColor: string;
   formattedTime: string;
   showPreview: boolean;
   previewRef?: React.Ref<HTMLDivElement>;
   setShowPreview: (showPreview: boolean) => void;
-  quoteTextColor: string;
   isDownloading: boolean;
 }
 
@@ -34,15 +33,16 @@ function Canvas({
   aspectRatio,
   pageTextColor,
   quoteBackgroundColor,
+  quoteTextColor,
   formattedTime,
   showPreview,
   previewRef,
   setShowPreview,
-  quoteTextColor,
   isDownloading,
 }: CanvasProps) {
   return (
     <>
+      {/* ── LIENZO EDITOR ── */}
       <div className="flex-1 flex items-center justify-center z-10 relative">
         <DecorativeSidebars
           textLength={text.length}
@@ -50,14 +50,13 @@ function Canvas({
           color={pageTextColor}
         />
         <h2
-          className="absolute top-1/2 -translate-y-1/2 -left-1/2 -translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase  px-12 py-4 transition-all duration-700 select-none"
+          className="absolute top-1/2 -translate-y-1/2 -left-1/2 -translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase px-12 py-4 transition-all duration-700 select-none"
           style={{ color: `${pageTextColor}4a` }}
         >
           Quote's
         </h2>
-
         <h2
-          className="absolute top-1/2 -translate-y-1/2 -right-1/2 translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase  px-12 py-4 transition-all duration-700 select-none"
+          className="absolute top-1/2 -translate-y-1/2 -right-1/2 translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase px-12 py-4 transition-all duration-700 select-none"
           style={{ color: `${pageTextColor}4a` }}
         >
           Creator
@@ -86,34 +85,32 @@ function Canvas({
               color: pageTextColor,
             }}
           />
-
           <AuthorFooter
             author={author}
             autorFontFamily={autorFontFamily}
             fontSize={fontSize}
             timeString={formattedTime}
-            isEditor={true}
             color={pageTextColor}
             borderColor={`${pageTextColor}1a`}
           />
         </div>
       </div>
 
+      {/* ── PREVIEW / CAPTURA ── */}
       {showPreview && (
         <div
           className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50 p-6"
           onClick={() => setShowPreview(false)}
         >
-          {/* CONTENEDOR */}
           <div
             id="download-capture"
             ref={previewRef}
             onClick={(e) => e.stopPropagation()}
-            className={`relative border ${showPreview ? "animate-scaleIn" : "animate-scaleOut"} flex flex-col items-center p-12`}
+            className="relative border animate-scaleIn flex flex-col items-center p-12"
             style={{
               aspectRatio: aspectRatio.value,
               background: quoteBackgroundColor,
-              color: getQuoteTextColor(quoteBackgroundColor),
+              color: quoteTextColor,
               borderColor: `${pageTextColor}1a`,
               height: "80vh",
               maxHeight: "80vh",
@@ -129,7 +126,6 @@ function Canvas({
                 <X className="w-6 h-6" />
               </button>
             )}
-            {/* CONTENIDO */}
             <div
               className="w-full flex-1 whitespace-pre-wrap wrap-break-words leading-relaxed"
               style={{
@@ -145,7 +141,6 @@ function Canvas({
               autorFontFamily={autorFontFamily}
               fontSize={fontSize}
               timeString={formattedTime}
-              isEditor={true}
               color={quoteTextColor}
               borderColor={`${pageTextColor}1a`}
             />
