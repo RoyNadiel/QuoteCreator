@@ -8,6 +8,9 @@ import { Sidebar } from "./components/Sidebar";
 import { aspectRatioOptions, pageBackgroundOptions } from "./constants/options";
 import { getQuoteTextColor, getPageTextColor } from "./utils/colors";
 import type { TextAlign } from "./types";
+import Canvas from "./components/Canvas";
+
+// --- Componente Principal ---
 
 function App() {
   const [text, setText] = useState("");
@@ -15,7 +18,7 @@ function App() {
   const [quoteBackgroundColor, setQuoteBackgroundColor] = useState("#FFF9F0");
   const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
   const [autorFontFamily, setAutorFontFamily] = useState("Serif");
-  const [fontSize, setFontSize] = useState(18);
+  const [fontSize, setFontSize] = useState(24);
   const [textAlign, setTextAlign] = useState<TextAlign>("center");
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
   const [pageBg, setPageBg] = useState("rain");
@@ -59,21 +62,34 @@ function App() {
       }
 
       console.log("Capturando con html2canvas...");
+
       const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: quoteBackgroundColor,
-        scale: 4, // Mayor resolución para mejor calidad
+        backgroundColor: null, // Permitir transparencia para capturar la sombra correctamente sobre el fondo
+        scale: 4, // Alta resolución requerida para calidad premium
         logging: true,
         useCORS: true,
+        allowTaint: true,
+        // No limitamos width/height aquí para que capture todo el contenedor (incluyendo el padding de la sombra)
         onclone: (clonedDoc) => {
-          // Obtener el elemento clonado y remover las restricciones de tamaño
-          // para que siempre se renderice en su tamaño real completo
           const element = clonedDoc.getElementById("download-capture");
           if (element) {
+            // Dimensiones fijas para el elemento interno
+            element.style.height = `${aspectRatio.height}px`;
+            element.style.width = `${aspectRatio.width}px`;
             element.style.maxWidth = "none";
             element.style.maxHeight = "none";
-            // Asegurar que el elemento tenga el ancho/alto completo configurado
-            element.style.width = `${aspectRatio.width}px`;
-            element.style.height = `${aspectRatio.height}px`;
+            
+            // Forzar sombra visible en la captura
+            element.style.boxShadow = "0 40px 100px -20px rgba(0, 0, 0, 0.4)";
+            
+            // Asegurar que el padre del clon tenga espacio y fondo limpio
+            if (element.parentElement) {
+              element.parentElement.style.padding = "100px";
+              element.parentElement.style.display = "flex";
+              element.parentElement.style.justifyContent = "center";
+              element.parentElement.style.alignItems = "center";
+              element.parentElement.style.backgroundColor = "transparent";
+            }
           }
         },
       });
@@ -99,15 +115,28 @@ function App() {
   );
   const isMesh = !!currentBgOption?.meshColors;
 
+  const formattedTime = currentTime.toLocaleTimeString([], {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  const pageTextColor = getPageTextColor(pageBg);
+  const quoteTextColor = getQuoteTextColor(quoteBackgroundColor);
+
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden transition-colors duration-500"
+      className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden transition-colors duration-500"
       style={{
         background: pageBg === "rain" || isMesh ? "#0f172a" : pageBg,
       }}
     >
       {pageBg === "rain" && <RainBackground />}
       {isMesh && <MeshBackground colors={currentBgOption.meshColors} />}
+
       {/* Boton de Menu */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
@@ -151,153 +180,24 @@ function App() {
         />
       )}
 
-      <div className="flex-1 flex items-center justify-center z-10 relative">
-        {/* Decorative Side Metadata - Left */}
-        <div
-          className="absolute -left-20 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-8 opacity-40 vertical-text"
-          style={{ color: getPageTextColor(pageBg) }}
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-xs uppercase font-mono">Input Active</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          </div>
-          <span className="text-xs uppercase font-mono">Studio V1</span>
-        </div>
-
-        {/* Decorative Side Metadata - Right */}
-        <div
-          className="absolute -right-20 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-8 opacity-40 vertical-text"
-          style={{ color: getPageTextColor(pageBg) }}
-        >
-          <span className="text-xs uppercase font-mono">
-            {text.length} Characters
-          </span>
-          <span className="text-xs uppercase font-mono">
-            {aspectRatio.name.split(" ")[0]}
-          </span>
-        </div>
-        <div
-          className="w-full h-full flex flex-col items-center border-2 z-50 p-4"
-          style={{
-            borderColor: `${getPageTextColor(pageBg)}1a`,
-          }}
-        >
-          <textarea
-            name="Quote"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Comienza a escribir..."
-            className="w-fit h-[80vh] border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/80 z-20 transition-colors duration-300 scrollbar-hide"
-            style={{
-              aspectRatio: aspectRatio.value,
-              fontFamily: quoteFontFamily,
-              fontSize: `${fontSize}px`,
-              textAlign: textAlign as any,
-              color: getPageTextColor(pageBg),
-            }}
-          />
-
-          {author && (
-            <div
-              className="w-full pt-4 border-t opacity-80 z-20 transition-colors duration-300 mb-10 flex justify-between items-center"
-              style={{
-                borderColor: `${getPageTextColor(pageBg)}1a`,
-                color: getPageTextColor(pageBg),
-                width: `${aspectRatio.width}px`,
-              }}
-            >
-              <div className="text-xs font-mono tracking-widest opacity-60">
-                {currentTime.toLocaleTimeString([], {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "2-digit",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  second: "2-digit",
-                })}
-              </div>
-              <p
-                className="italic"
-                style={{
-                  fontFamily: autorFontFamily,
-                  fontSize: `${Math.max(fontSize * 0.8, 14)}px`,
-                  textAlign: "right",
-                }}
-              >
-                — {author}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {showPreview && (
-        <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50 p-4"
-          onClick={() => setShowPreview(false)}
-        >
-          <div
-            id="download-capture"
-            ref={previewRef}
-            onClick={(e) => e.stopPropagation()}
-            className={`relative p-12 rounded-xl shadow-2xl ${showPreview ? "animate-scaleIn" : "animate-scaleOut"} flex flex-col justify-center`}
-            style={{
-              aspectRatio: aspectRatio.value,
-              backgroundColor: quoteBackgroundColor,
-              color: getQuoteTextColor(quoteBackgroundColor),
-              width: `${aspectRatio.width}px`,
-              height: `${aspectRatio.height}px`,
-              maxWidth: "90vw",
-              maxHeight: "90vh",
-            }}
-          >
-            <button
-              name="xmark"
-              className="absolute top-4 right-6 p-2 text-current opacity-40 hover:opacity-100 transition-opacity"
-              onClick={() => setShowPreview(false)}
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <div
-              className="w-full h-full whitespace-pre-wrap break-words"
-              style={{
-                fontFamily: quoteFontFamily,
-                fontSize: `${fontSize}px`,
-                textAlign: textAlign as any,
-              }}
-            >
-              {text}
-            </div>
-            {author && (
-              <div
-                className="mt-8 w-full pt-4 border-t flex justify-between items-center"
-                style={{ borderColor: getQuoteTextColor(quoteBackgroundColor) }}
-              >
-                <div className="text-xs font-mono tracking-widest opacity-60">
-                  {currentTime.toLocaleTimeString([], {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  })}
-                </div>
-                <p
-                  className="italic"
-                  style={{
-                    fontFamily: autorFontFamily,
-                    fontSize: `${Math.max(fontSize * 0.9, 12)}px`,
-                    textAlign: "right",
-                  }}
-                >
-                  — {author}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <Canvas
+        text={text}
+        setText={setText}
+        author={author}
+        quoteFontFamily={quoteFontFamily}
+        autorFontFamily={autorFontFamily}
+        fontSize={fontSize}
+        textAlign={textAlign}
+        aspectRatio={aspectRatio}
+        pageTextColor={pageTextColor}
+        quoteBackgroundColor={quoteBackgroundColor}
+        formattedTime={formattedTime}
+        showPreview={showPreview}
+        previewRef={previewRef}
+        setShowPreview={setShowPreview}
+        quoteTextColor={quoteTextColor}
+        isDownloading={isDownloading}
+      />
     </div>
   );
 }

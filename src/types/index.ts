@@ -1,4 +1,5 @@
 export type TextAlign = "left" | "center" | "right";
+export type TextVerticalAlign = "top" | "center" | "bottom";
 
 export interface AspectRatioOption {
   name: string;

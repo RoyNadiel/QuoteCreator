@@ -7,9 +7,15 @@ interface FontPickerProps {
   label?: string;
   value: string;
   onChange: (font: string) => void;
+  disabled?: boolean;
 }
 
-export const FontPicker = ({ label, value, onChange }: FontPickerProps) => {
+export const FontPicker = ({
+  label,
+  value,
+  onChange,
+  disabled,
+}: FontPickerProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -72,8 +78,13 @@ export const FontPicker = ({ label, value, onChange }: FontPickerProps) => {
       </label>
 
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all text-left"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`w-full flex items-center justify-between px-4 py-3 border border-slate-200 rounded-xl transition-all text-left ${
+          disabled
+            ? "bg-slate-100 cursor-not-allowed opacity-60"
+            : "bg-slate-50 hover:border-slate-300 focus:ring-2 focus:ring-slate-200 focus:bg-white"
+        }`}
       >
         <span
           className="truncate text-slate-700 font-medium"

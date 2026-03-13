@@ -144,7 +144,11 @@ export const Sidebar = ({
             <Type className="w-5 h-5" />
             <h2 className="text-lg font-medium">Fuente del Autor</h2>
           </div>
-          <FontPicker value={autorFontFamilty} onChange={setAutorFontFamily} />
+          <FontPicker
+            value={autorFontFamilty}
+            onChange={setAutorFontFamily}
+            disabled={!author.trim()}
+          />
         </div>
 
         <div>
