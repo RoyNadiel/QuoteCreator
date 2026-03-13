@@ -1,7 +1,6 @@
 import {
   Download,
   Type,
-  Palette,
   AlignLeft,
   AlignCenter,
   AlignRight,
@@ -12,7 +11,6 @@ import {
 } from "lucide-react";
 import {
   pageBackgroundOptions,
-  quoteColorOptions,
   aspectRatioOptions,
 } from "../constants/options";
 import { FontPicker } from "./FontPicker";
@@ -31,8 +29,6 @@ export interface SidebarProps {
   setAutorFontFamily: (font: string) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
-  quoteBackgroundColor: string;
-  setQuoteBackgroundColor: (color: string) => void;
   textAlign: TextAlign;
   setTextAlign: (align: TextAlign) => void;
   aspectRatio: AspectRatioOption;
@@ -55,8 +51,6 @@ export const Sidebar = ({
   setAutorFontFamily,
   fontSize,
   setFontSize,
-  quoteBackgroundColor,
-  setQuoteBackgroundColor,
   textAlign,
   setTextAlign,
   aspectRatio,
@@ -167,28 +161,6 @@ export const Sidebar = ({
 
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Palette className="w-5 h-5" />
-            <h2 className="text-lg font-medium">Fondo del Escrito</h2>
-          </div>
-          <div className="grid grid-cols-5 gap-2">
-            {quoteColorOptions.map((color) => (
-              <button
-                key={color.value}
-                onClick={() => setQuoteBackgroundColor(color.value)}
-                className={`w-full aspect-square rounded-lg transition-all hover:scale-110 ${
-                  quoteBackgroundColor === color.value
-                    ? "ring-2 ring-current ring-offset-2"
-                    : "ring-1 ring-slate-200"
-                }`}
-                style={{ background: color.value }}
-                title={color.name}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2 mb-4">
             <Type className="w-5 h-5" />
             <h2 className="text-lg font-medium">Alineación</h2>
           </div>
@@ -244,6 +216,7 @@ export const Sidebar = ({
                 (opt) => opt.value === e.target.value,
               );
               if (selected) setAspectRatio(selected);
+              setFontSize(selected?.fontSize || 20);
             }}
             className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all cursor-pointer font-medium appearance-none"
           >

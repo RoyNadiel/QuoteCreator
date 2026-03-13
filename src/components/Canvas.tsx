@@ -112,7 +112,7 @@ function Canvas({
             className={`relative border ${showPreview ? "animate-scaleIn" : "animate-scaleOut"} flex flex-col items-center p-12`}
             style={{
               aspectRatio: aspectRatio.value,
-              backgroundColor: quoteBackgroundColor,
+              background: quoteBackgroundColor,
               color: getQuoteTextColor(quoteBackgroundColor),
               borderColor: `${pageTextColor}1a`,
               height: "80vh",
@@ -134,7 +134,7 @@ function Canvas({
               className="w-full flex-1 whitespace-pre-wrap wrap-break-words leading-relaxed"
               style={{
                 fontFamily: quoteFontFamily,
-                fontSize: `${fontSize + (fontSize * 10) / 100}px`,
+                fontSize: `${fontSize}px`,
                 textAlign: textAlign as any,
               }}
             >

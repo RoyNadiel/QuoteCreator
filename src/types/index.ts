@@ -6,6 +6,7 @@ export interface AspectRatioOption {
   value: string;
   width: number;
   height: number;
+  fontSize: number;
 }
 
 export interface BackgroundOption {

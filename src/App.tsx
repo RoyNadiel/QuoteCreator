@@ -6,7 +6,7 @@ import { RainBackground } from "./components/RainBackground";
 import { MeshBackground } from "./components/MeshBackground";
 import { Sidebar } from "./components/Sidebar";
 import { aspectRatioOptions, pageBackgroundOptions } from "./constants/options";
-import { getQuoteTextColor, getPageTextColor } from "./utils/colors";
+import { getQuoteTextColor, getPageTextColor, getQuoteBackgroundColor } from "./utils/colors";
 import type { TextAlign } from "./types";
 import Canvas from "./components/Canvas";
 
@@ -15,7 +15,6 @@ import Canvas from "./components/Canvas";
 function App() {
   const [text, setText] = useState("");
   const [author, setAuthor] = useState("");
-  const [quoteBackgroundColor, setQuoteBackgroundColor] = useState("#FFF9F0");
   const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
   const [autorFontFamily, setAutorFontFamily] = useState("Serif");
   const [fontSize, setFontSize] = useState(24);
@@ -63,34 +62,52 @@ function App() {
 
       console.log("Capturando con html2canvas...");
 
+      const isGradient = quoteBackgroundColor.startsWith("linear-gradient");
+
+      // Tamaño real del elemento en pantalla antes de clonar
+      const rect = previewRef.current.getBoundingClientRect();
+      const scaleX = aspectRatio.width / rect.width;
+      const scaleY = aspectRatio.height / rect.height;
+
       const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: quoteBackgroundColor,
-        logging: true,
+        backgroundColor: isGradient ? null : quoteBackgroundColor,
+        logging: false,
         useCORS: true,
         allowTaint: true,
-        width: aspectRatio.width,
-        height: aspectRatio.height,
-        scrollX: -window.scrollX,
-        scrollY: -window.scrollY,
-        onclone: (clonedDoc) => {
-          const element = clonedDoc.getElementById("download-capture");
-          if (element) {
-            // Eliminar restricciones de visualización en pantalla
-            element.style.maxHeight = "none";
-            element.style.maxWidth = "none";
-            element.style.height = `${aspectRatio.height}px`;
-            element.style.width = `${aspectRatio.width}px`;
+        scale: 1,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: (_clonedDoc, element) => {
+          // Forzar el elemento clonado al tamaño exacto de la imagen final
+          element.style.position = "fixed";
+          element.style.top = "0";
+          element.style.left = "0";
+          element.style.width = `${aspectRatio.width}px`;
+          element.style.height = `${aspectRatio.height}px`;
+          element.style.maxWidth = "none";
+          element.style.maxHeight = "none";
+          element.style.aspectRatio = "auto";
+          element.style.border = "none";
+          element.style.boxSizing = "border-box";
+          element.style.display = "flex";
+          element.style.flexDirection = "column";
+          element.style.background = quoteBackgroundColor;
+          element.style.animation = "none";
+          element.style.transform = "none";
 
-            // Forzar proporciones perfectas y limpiar efectos que distorsionan el tamaño
-            element.style.aspectRatio = "auto";
-            element.style.border = "none";
-            element.style.boxSizing = "border-box";
+          // Escalar padding del contenedor
+          const currentPadding = parseFloat(getComputedStyle(element).paddingTop) || 48;
+          const scaledPadding = Math.round(currentPadding * Math.min(scaleX, scaleY));
+          element.style.padding = `${scaledPadding}px`;
 
-            // Asegurar que el contenido interno tenga espacio igual
-            element.style.display = "flex";
-            element.style.flexDirection = "column";
-            // No forzamos justifyContent para respetar el flex-1 interno
-          }
+          // Escalar font-size y line-height de todos los descendientes
+          const allChildren = element.querySelectorAll("*");
+          allChildren.forEach((child) => {
+            const el = child as HTMLElement;
+            const computed = getComputedStyle(el);
+            const fs = parseFloat(computed.fontSize);
+            if (fs) el.style.fontSize = `${fs * Math.min(scaleX, scaleY)}px`;
+          });
         },
       });
 
@@ -125,6 +142,7 @@ function App() {
   });
 
   const pageTextColor = getPageTextColor(pageBg);
+  const quoteBackgroundColor = getQuoteBackgroundColor(pageBg);
   const quoteTextColor = getQuoteTextColor(quoteBackgroundColor);
 
   return (
@@ -161,8 +179,6 @@ function App() {
         setAutorFontFamily={setAutorFontFamily}
         fontSize={fontSize}
         setFontSize={setFontSize}
-        quoteBackgroundColor={quoteBackgroundColor}
-        setQuoteBackgroundColor={setQuoteBackgroundColor}
         textAlign={textAlign}
         setTextAlign={setTextAlign}
         aspectRatio={aspectRatio}
