@@ -1,6 +1,7 @@
 import { DecorativeSidebars } from "./DecorativeSidebars";
 import { AuthorFooter } from "./AuthorFooter";
 import { X } from "lucide-react";
+import { getQuoteTextColor } from "../utils/colors";
 import type { AspectRatioOption } from "../types";
 
 interface CanvasProps {
@@ -22,78 +23,6 @@ interface CanvasProps {
   isDownloading: boolean;
 }
 
-// --- Subcomponente unificado para la Tarjeta de Cita ---
-const QuoteCard = ({
-  id,
-  innerRef,
-  isEditor,
-  text,
-  setText,
-  author,
-  quoteFontFamily,
-  autorFontFamily,
-  fontSize,
-  textAlign,
-  aspectRatio,
-  quoteBackgroundColor,
-  quoteTextColor,
-  formattedTime,
-  borderColor,
-  isCapture = false,
-}: any) => {
-  return (
-    <div
-      id={id}
-      ref={innerRef}
-      className={`relative flex flex-col items-center border-2 z-50 p-12 rounded-xl transition-all duration-300 ${isCapture ? "" : "shadow-2xl"}`}
-      style={{
-        borderColor,
-        backgroundColor: quoteBackgroundColor,
-        color: quoteTextColor,
-        aspectRatio: aspectRatio.value,
-        height: isCapture ? undefined : "80vh",
-        maxHeight: isCapture ? undefined : "80vh",
-        maxWidth: "90vw",
-        boxShadow: isCapture ? "0 25px 50px -12px rgba(0, 0, 0, 0.4)" : undefined,
-      }}
-    >
-      {isEditor ? (
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Comienza a escribir..."
-          className="w-full flex-1 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/80 z-20 transition-colors duration-300 scrollbar-hide"
-          style={{
-            fontFamily: quoteFontFamily,
-            fontSize: `${fontSize}px`,
-            textAlign: textAlign as any,
-          }}
-        />
-      ) : (
-        <div
-          className="w-full flex-1 whitespace-pre-wrap wrap-break-words leading-relaxed overflow-hidden"
-          style={{
-            fontFamily: quoteFontFamily,
-            fontSize: `${fontSize}px`,
-            textAlign: textAlign as any,
-          }}
-        >
-          {text}
-        </div>
-      )}
-
-      <AuthorFooter
-        author={author}
-        autorFontFamily={autorFontFamily}
-        fontSize={fontSize}
-        timeString={formattedTime}
-        color={quoteTextColor}
-        borderColor={borderColor}
-      />
-    </div>
-  );
-};
-
 function Canvas({
   text,
   setText,
@@ -112,21 +41,6 @@ function Canvas({
   quoteTextColor,
   isDownloading,
 }: CanvasProps) {
-  const commonProps = {
-    text,
-    setText,
-    author,
-    quoteFontFamily,
-    autorFontFamily,
-    fontSize,
-    textAlign,
-    aspectRatio,
-    quoteBackgroundColor,
-    quoteTextColor,
-    formattedTime,
-    borderColor: `${pageTextColor}1a`,
-  };
-
   return (
     <>
       <div className="flex-1 flex items-center justify-center z-10 relative">
@@ -149,8 +63,40 @@ function Canvas({
           Creator
         </h2>
 
-        {/* EDITOR PRINCIPAL */}
-        <QuoteCard {...commonProps} isEditor={true} />
+        <div
+          className="flex flex-col items-center border-2 z-50 p-12 shadow-2xl transition-all duration-300"
+          style={{
+            borderColor: `${pageTextColor}1a`,
+            aspectRatio: aspectRatio.value,
+            height: "80vh",
+            maxHeight: "80vh",
+            maxWidth: "90vw",
+          }}
+        >
+          <textarea
+            name="Quote"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Comienza a escribir..."
+            className="w-full flex-1 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/80 z-20 transition-colors duration-300 scrollbar-hide"
+            style={{
+              fontFamily: quoteFontFamily,
+              fontSize: `${fontSize}px`,
+              textAlign: textAlign as any,
+              color: pageTextColor,
+            }}
+          />
+
+          <AuthorFooter
+            author={author}
+            autorFontFamily={autorFontFamily}
+            fontSize={fontSize}
+            timeString={formattedTime}
+            isEditor={true}
+            color={pageTextColor}
+            borderColor={`${pageTextColor}1a`}
+          />
+        </div>
       </div>
 
       {showPreview && (
@@ -158,28 +104,51 @@ function Canvas({
           className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50 p-6"
           onClick={() => setShowPreview(false)}
         >
-          {/* CONTENEDOR DE CAPTURA (con padding para la sombra) */}
+          {/* CONTENEDOR */}
           <div
+            id="download-capture"
             ref={previewRef}
-            className={`p-16 transition-transform duration-300 ${showPreview ? "animate-scaleIn" : "animate-scaleOut"}`}
             onClick={(e) => e.stopPropagation()}
+            className={`relative border ${showPreview ? "animate-scaleIn" : "animate-scaleOut"} flex flex-col items-center p-12`}
+            style={{
+              aspectRatio: aspectRatio.value,
+              backgroundColor: quoteBackgroundColor,
+              color: getQuoteTextColor(quoteBackgroundColor),
+              borderColor: `${pageTextColor}1a`,
+              height: "80vh",
+              maxHeight: "80vh",
+              maxWidth: "90vw",
+            }}
           >
-            <QuoteCard
-              {...commonProps}
-              id="download-capture"
-              isEditor={false}
-              isCapture={true}
-            />
-
             {!isDownloading && (
               <button
                 name="xmark"
-                className="absolute top-0 right-4 p-2 text-white/40 hover:text-white transition-opacity"
+                className="absolute top-4 right-6 p-2 text-current opacity-40 hover:opacity-100 transition-opacity"
                 onClick={() => setShowPreview(false)}
               >
                 <X className="w-6 h-6" />
               </button>
             )}
+            {/* CONTENIDO */}
+            <div
+              className="w-full flex-1 whitespace-pre-wrap wrap-break-words leading-relaxed"
+              style={{
+                fontFamily: quoteFontFamily,
+                fontSize: `${fontSize + (fontSize * 10) / 100}px`,
+                textAlign: textAlign as any,
+              }}
+            >
+              {text}
+            </div>
+            <AuthorFooter
+              author={author}
+              autorFontFamily={autorFontFamily}
+              fontSize={fontSize}
+              timeString={formattedTime}
+              isEditor={true}
+              color={quoteTextColor}
+              borderColor={`${pageTextColor}1a`}
+            />
           </div>
         </div>
       )}

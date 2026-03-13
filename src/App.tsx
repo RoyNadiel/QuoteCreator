@@ -64,32 +64,32 @@ function App() {
       console.log("Capturando con html2canvas...");
 
       const canvas = await html2canvas(previewRef.current, {
-        backgroundColor: null, // Permitir transparencia para capturar la sombra correctamente sobre el fondo
-        scale: 4, // Alta resolución requerida para calidad premium
+        backgroundColor: quoteBackgroundColor,
         logging: true,
         useCORS: true,
         allowTaint: true,
-        // No limitamos width/height aquí para que capture todo el contenedor (incluyendo el padding de la sombra)
+        width: aspectRatio.width,
+        height: aspectRatio.height,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
         onclone: (clonedDoc) => {
           const element = clonedDoc.getElementById("download-capture");
           if (element) {
-            // Dimensiones fijas para el elemento interno
+            // Eliminar restricciones de visualización en pantalla
+            element.style.maxHeight = "none";
+            element.style.maxWidth = "none";
             element.style.height = `${aspectRatio.height}px`;
             element.style.width = `${aspectRatio.width}px`;
-            element.style.maxWidth = "none";
-            element.style.maxHeight = "none";
-            
-            // Forzar sombra visible en la captura
-            element.style.boxShadow = "0 40px 100px -20px rgba(0, 0, 0, 0.4)";
-            
-            // Asegurar que el padre del clon tenga espacio y fondo limpio
-            if (element.parentElement) {
-              element.parentElement.style.padding = "100px";
-              element.parentElement.style.display = "flex";
-              element.parentElement.style.justifyContent = "center";
-              element.parentElement.style.alignItems = "center";
-              element.parentElement.style.backgroundColor = "transparent";
-            }
+
+            // Forzar proporciones perfectas y limpiar efectos que distorsionan el tamaño
+            element.style.aspectRatio = "auto";
+            element.style.border = "none";
+            element.style.boxSizing = "border-box";
+
+            // Asegurar que el contenido interno tenga espacio igual
+            element.style.display = "flex";
+            element.style.flexDirection = "column";
+            // No forzamos justifyContent para respetar el flex-1 interno
           }
         },
       });
