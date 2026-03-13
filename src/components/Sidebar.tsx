@@ -62,14 +62,14 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <div
-      className={`fixed top-0 left-0 h-screen w-80 bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
+      className={`fixed top-0 left-0 h-screen w-full max-w-[320px] bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
         menuOpen ? "translate-x-0" : "-translate-x-full"
       }`}
       style={{
         color: getPageTextColor(pageBg),
       }}
     >
-      <div className="p-6 pt-16 space-y-6">
+      <div className="p-4 sm:p-6 pt-16 sm:pt-16 space-y-6">
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Monitor className="w-5 h-5" />
@@ -151,7 +151,7 @@ export const Sidebar = ({
           </label>
           <input
             type="range"
-            min="14"
+            min="10"
             max="48"
             value={fontSize}
             onChange={(e) => setFontSize(Number(e.target.value))}

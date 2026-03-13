@@ -50,20 +50,20 @@ function Canvas({
           color={pageTextColor}
         />
         <h2
-          className="absolute top-1/2 -translate-y-1/2 -left-1/2 -translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase px-12 py-4 transition-all duration-700 select-none"
+          className="absolute top-1/2 -translate-y-1/2 -left-[40%] md:-left-1/2 -translate-x-1/2 text-lg sm:text-xl md:text-2xl font-extralight tracking-[0.3em] sm:tracking-[0.5em] uppercase px-4 sm:px-8 md:px-12 py-2 md:py-4 transition-all duration-700 select-none hidden sm:block"
           style={{ color: `${pageTextColor}4a` }}
         >
           Quote's
         </h2>
         <h2
-          className="absolute top-1/2 -translate-y-1/2 -right-1/2 translate-x-1/2 text-2xl font-extralight tracking-[0.5em] uppercase px-12 py-4 transition-all duration-700 select-none"
+          className="absolute top-1/2 -translate-y-1/2 -right-[40%] md:-right-1/2 translate-x-1/2 text-lg sm:text-xl md:text-2xl font-extralight tracking-[0.3em] sm:tracking-[0.5em] uppercase px-4 sm:px-8 md:px-12 py-2 md:py-4 transition-all duration-700 select-none hidden sm:block"
           style={{ color: `${pageTextColor}4a` }}
         >
           Creator
         </h2>
 
         <div
-          className="flex flex-col items-center border-2 z-50 p-12 shadow-2xl transition-all duration-300"
+          className="flex flex-col items-center border-2 z-50 p-6 sm:p-8 md:p-12 shadow-2xl transition-all duration-300"
           style={{
             borderColor: `${pageTextColor}1a`,
             aspectRatio: aspectRatio.value,
@@ -106,7 +106,7 @@ function Canvas({
             id="download-capture"
             ref={previewRef}
             onClick={(e) => e.stopPropagation()}
-            className="relative border animate-scaleIn flex flex-col items-center p-12"
+            className="relative border animate-scaleIn flex flex-col items-center p-6 sm:p-8 md:p-12"
             style={{
               aspectRatio: aspectRatio.value,
               background: quoteBackgroundColor,

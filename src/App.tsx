@@ -191,7 +191,7 @@ function App() {
 
       {menuOpen && (
         <div
-          className="fixed inset-0 z-30"
+          className="fixed inset-0 z-30 bg-black/10 backdrop-blur-[2px] sm:bg-transparent sm:backdrop-blur-none transition-all duration-300"
           onClick={() => setMenuOpen(false)}
         />
       )}
