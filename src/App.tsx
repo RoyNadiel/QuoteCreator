@@ -6,7 +6,11 @@ import { RainBackground } from "./components/RainBackground";
 import { MeshBackground } from "./components/MeshBackground";
 import { Sidebar } from "./components/Sidebar";
 import { aspectRatioOptions, pageBackgroundOptions } from "./constants/options";
-import { getQuoteTextColor, getPageTextColor, getQuoteBackgroundColor } from "./utils/colors";
+import {
+  getQuoteTextColor,
+  getPageTextColor,
+  getQuoteBackgroundColor,
+} from "./utils/colors";
 import type { TextAlign } from "./types";
 import Canvas from "./components/Canvas";
 
@@ -17,10 +21,12 @@ function App() {
   const [author, setAuthor] = useState("");
   const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
   const [autorFontFamily, setAutorFontFamily] = useState("Serif");
-  const [fontSize, setFontSize] = useState(24);
+  const [fontSize, setFontSize] = useState(20);
   const [textAlign, setTextAlign] = useState<TextAlign>("center");
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
-  const [pageBg, setPageBg] = useState("rain");
+  const [pageBg, setPageBg] = useState(
+    "linear-gradient(135deg, #fdf2f8, #f5f3ff)",
+  );
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -96,8 +102,11 @@ function App() {
           element.style.transform = "none";
 
           // Escalar padding del contenedor
-          const currentPadding = parseFloat(getComputedStyle(element).paddingTop) || 48;
-          const scaledPadding = Math.round(currentPadding * Math.min(scaleX, scaleY));
+          const currentPadding =
+            parseFloat(getComputedStyle(element).paddingTop) || 48;
+          const scaledPadding = Math.round(
+            currentPadding * Math.min(scaleX, scaleY),
+          );
           element.style.padding = `${scaledPadding}px`;
 
           // Escalar font-size y line-height de todos los descendientes

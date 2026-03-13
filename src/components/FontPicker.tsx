@@ -107,7 +107,6 @@ export const FontPicker = ({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 font-medium"
-              autoFocus
             />
           </div>
           <div className="max-h-60 overflow-y-auto">
