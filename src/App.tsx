@@ -31,6 +31,7 @@ function App() {
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [isOverflowing, setIsOverflowing] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -196,6 +197,7 @@ function App() {
         isDownloading={isDownloading}
         handleDownload={handleDownload}
         setShowPreview={setShowPreview}
+        isOverflowing={isOverflowing}
       />
 
       {menuOpen && (
@@ -222,6 +224,8 @@ function App() {
         setShowPreview={setShowPreview}
         quoteTextColor={quoteTextColor}
         isDownloading={isDownloading}
+        isOverflowing={isOverflowing}
+        setIsOverflowing={setIsOverflowing}
       />
     </div>
   );
