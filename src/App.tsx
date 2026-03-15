@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import html2canvas from "html2canvas";
-import { loadGoogleFont } from "./utils/fonts";
-import { RainBackground } from "./components/RainBackground";
-import { MeshBackground } from "./components/MeshBackground";
-import { Sidebar } from "./components/Sidebar";
-import { aspectRatioOptions, pageBackgroundOptions } from "./constants/options";
+import { loadGoogleFont } from "./design-assets/utils/fonts";
+import { RainBackground } from "./design-assets/components/RainBackground";
+import { MeshBackground } from "./design-assets/components/MeshBackground";
+import { Sidebar } from "./quote-editor/components/Sidebar";
+import { aspectRatioOptions, pageBackgroundOptions } from "./quote-editor/constants/options";
 import {
   getQuoteTextColor,
   getPageTextColor,
   getQuoteBackgroundColor,
-} from "./utils/colors";
-import type { TextAlign } from "./types";
-import Canvas from "./components/Canvas";
+} from "./quote-editor/utils/colors";
+import type { TextAlign } from "./quote-editor/types";
+import Canvas from "./quote-editor/components/Canvas";
 
 // --- Componente Principal ---
 

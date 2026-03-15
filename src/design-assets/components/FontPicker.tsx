@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Search, ChevronDown, Check } from "lucide-react";
 import { popularGoogleFonts, loadGoogleFont } from "../utils/fonts";
-import { fontOptions } from "../constants/options";
+import { fontOptions } from "../../quote-editor/constants/options";
 
 interface FontPickerProps {
   label?: string;

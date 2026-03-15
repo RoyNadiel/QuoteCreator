@@ -13,7 +13,7 @@ import {
   pageBackgroundOptions,
   aspectRatioOptions,
 } from "../constants/options";
-import { FontPicker } from "./FontPicker";
+import { FontPicker } from "../../design-assets/components/FontPicker";
 import type { AspectRatioOption, TextAlign } from "../types";
 import { getPageTextColor } from "../utils/colors";
 
