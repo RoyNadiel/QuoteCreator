@@ -11,7 +11,7 @@
   display: swap;
 }
 
-.vertical-text {
+@utility vertical-text {
   writing-mode: vertical-rl;
   text-orientation: upright;
   letter-spacing: 0.1em; /* Ajuste para que se vea más compacto en vertical */
