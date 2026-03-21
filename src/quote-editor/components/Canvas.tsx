@@ -82,8 +82,6 @@ function Canvas({
 
         // 3. Comparar contra el div lienzoRef (el límite real del lienzo)
         const hasOverflow = contentHeight >= lienzo.clientHeight;
-        console.log('Scroll-Height: ', textarea.scrollHeight);
-        console.log('Content-Height: ', contentHeight);
 
         setIsOverflowing(hasOverflow);
       }
@@ -188,7 +186,7 @@ function Canvas({
             padding: '2rem',
           }}
         >
-          <div className="absolute -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60">
+          <div className="absolute hidden sm:block -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60">
             {Intl.DateTimeFormat('es-VE', {
               timeStyle: 'long',
             }).format(new Date())}

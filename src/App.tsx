@@ -87,19 +87,26 @@ function App() {
       // Usamos offsetWidth/Height para ignorar transformaciones si la animación sigue corriendo.
       const width = previewRef.current.offsetWidth;
       const height = previewRef.current.offsetHeight;
-      const devicePixelRatio = window.devicePixelRatio || 1;
+      // Forzamos un scale de 2 o 3 para asegurar alta resolución independientemente del dispositivo
+      const scale = 3;
 
       const canvas = await html2canvas(previewRef.current, {
         backgroundColor: isGradient ? null : quoteBackgroundColor,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        scale: devicePixelRatio,
+        scale: scale,
         width: width,
         height: height,
         scrollX: 0,
         scrollY: 0,
+        imageTimeout: 0, // Esperar indefinidamente a que carguen las imágenes
         onclone: (_clonedDoc, element) => {
+          // Mejorar el renderizado de fuentes en el clon
+          element.style.setProperty('-webkit-font-smoothing', 'antialiased');
+          element.style.setProperty('-moz-osx-font-smoothing', 'grayscale');
+          element.style.textRendering = 'optimizeLegibility';
+
           // Posicionamos el clon en (0,0) sin modificar su altura.
           // Dejar que el CSS (height: 80vh) compute el alto naturalmente
           // evita que el flex layout desplace el AuthorFooter fuera del área capturada.
