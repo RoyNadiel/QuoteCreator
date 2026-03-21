@@ -1,31 +1,40 @@
-import { useState, useRef, useEffect } from "react";
-import { Menu, X } from "lucide-react";
-import html2canvas from "html2canvas";
-import { loadGoogleFont } from "./design-assets/utils/fonts";
-import { RainBackground } from "./design-assets/components/RainBackground";
-import { MeshBackground } from "./design-assets/components/MeshBackground";
-import { Sidebar } from "./quote-editor/components/Sidebar";
-import { aspectRatioOptions, pageBackgroundOptions } from "./quote-editor/constants/options";
+import { useState, useRef, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { loadGoogleFont } from './design-assets/utils/fonts';
+import { RainBackground } from './design-assets/components/RainBackground';
+import { MeshBackground } from './design-assets/components/MeshBackground';
+import { Sidebar } from './quote-editor/components/Sidebar';
+import {
+  aspectRatioOptions,
+  pageBackgroundOptions,
+} from './quote-editor/constants/options';
 import {
   getQuoteTextColor,
   getPageTextColor,
   getQuoteBackgroundColor,
-} from "./quote-editor/utils/colors";
-import type { TextAlign } from "./quote-editor/types";
-import Canvas from "./quote-editor/components/Canvas";
+} from './quote-editor/utils/colors';
+import type {
+  TextHorizontalAlign,
+  TextVerticalAlign,
+} from './quote-editor/types';
+import Canvas from './quote-editor/components/Canvas';
 
 // --- Componente Principal ---
 
 function App() {
-  const [text, setText] = useState("");
-  const [author, setAuthor] = useState("");
-  const [quoteFontFamily, setQuoteFontFamily] = useState("Serif");
-  const [autorFontFamily, setAutorFontFamily] = useState("Serif");
+  const [text, setText] = useState('');
+  const [author, setAuthor] = useState('');
+  const [quoteFontFamily, setQuoteFontFamily] = useState('Inconsolata');
+  const [autorFontFamily, setAutorFontFamily] = useState('Bellota');
   const [fontSize, setFontSize] = useState(20);
-  const [textAlign, setTextAlign] = useState<TextAlign>("center");
+  const [textHorizontalAlign, setTextHorizontalAlign] =
+    useState<TextHorizontalAlign>('center');
+  const [textVerticalAlign, setTextVerticalAlign] =
+    useState<TextVerticalAlign>('center');
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
   const [pageBg, setPageBg] = useState(
-    "linear-gradient(135deg, #fdf2f8, #f5f3ff)",
+    'linear-gradient(135deg, #fdf2f8, #f5f3ff)'
   );
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -33,6 +42,10 @@ function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOverflowing, setIsOverflowing] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
+
+  const pageTextColor = getPageTextColor(pageBg);
+  const quoteBackgroundColor = getQuoteBackgroundColor(pageBg);
+  const quoteTextColor = getQuoteTextColor(quoteBackgroundColor);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -50,11 +63,11 @@ function App() {
 
   const handleDownload = async () => {
     if (!text.trim()) {
-      console.log("No hay texto para descargar");
+      console.log('No hay texto para descargar');
       return;
     }
 
-    console.log("Iniciando descarga...");
+    console.log('Iniciando descarga...');
     setIsDownloading(true);
     setShowPreview(true);
 
@@ -63,72 +76,61 @@ function App() {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (!previewRef.current) {
-        console.error("previewRef.current (Elemento de Captura) es null");
+        console.error('previewRef.current (Elemento de Captura) es null');
         return;
       }
 
-      console.log("Capturando con html2canvas...");
+      console.log('Capturando con html2canvas...');
 
-      const isGradient = quoteBackgroundColor.startsWith("linear-gradient");
+      const isGradient = quoteBackgroundColor.startsWith('linear-gradient');
 
-      // Tamaño real del elemento en pantalla antes de clonar
+      // Capturamos el elemento exactamente tal como está en pantalla.
+      // Así el font-size de la imagen es idéntico al del lienzo.
+      // Usamos devicePixelRatio para que la imagen sea nítida en pantallas retina,
+      // pero sin cambiar el tamaño relativo de nada.
       const rect = previewRef.current.getBoundingClientRect();
-      const scaleX = aspectRatio.width / rect.width;
-      const scaleY = aspectRatio.height / rect.height;
+      const devicePixelRatio = window.devicePixelRatio || 1;
 
       const canvas = await html2canvas(previewRef.current, {
         backgroundColor: isGradient ? null : quoteBackgroundColor,
         logging: false,
         useCORS: true,
         allowTaint: true,
-        scale: 1,
+        scale: devicePixelRatio,
+        width: rect.width,
+        height: rect.height,
         scrollX: 0,
         scrollY: 0,
         onclone: (_clonedDoc, element) => {
-          // Forzar el elemento clonado al tamaño exacto de la imagen final
-          element.style.position = "fixed";
-          element.style.top = "0";
-          element.style.left = "0";
-          element.style.width = `${aspectRatio.width}px`;
-          element.style.height = `${aspectRatio.height}px`;
-          element.style.maxWidth = "none";
-          element.style.maxHeight = "none";
-          element.style.aspectRatio = "auto";
-          element.style.border = "none";
-          element.style.boxSizing = "border-box";
-          element.style.display = "flex";
-          element.style.flexDirection = "column";
+          // Posicionamos el clon en (0,0) sin modificar su altura.
+          // Dejar que el CSS (height: 80vh) compute el alto naturalmente
+          // evita que el flex layout desplace el AuthorFooter fuera del área capturada.
+          // html2canvas usa `height: rect.height` para saber cuánto capturar.
+          element.style.position = 'fixed';
+          element.style.top = '0';
+          element.style.left = '0';
+          element.style.width = `${rect.width}px`;
+          element.style.height = `${rect.height}px`;
+          // No sobreescribimos height — el CSS lo maneja igual que en pantalla
+          element.style.maxWidth = 'none';
+          element.style.maxHeight = 'none';
+          element.style.aspectRatio = 'auto';
+          element.style.border = 'none';
           element.style.background = quoteBackgroundColor;
-          element.style.animation = "none";
-          element.style.transform = "none";
-
-          // Escalar padding del contenedor
-          const currentPadding =
-            parseFloat(getComputedStyle(element).paddingTop) || 48;
-          const scaledPadding = Math.round(
-            currentPadding * Math.min(scaleX, scaleY),
-          );
-          element.style.padding = `${scaledPadding}px`;
-
-          // Escalar font-size y line-height de todos los descendientes
-          const allChildren = element.querySelectorAll("*");
-          allChildren.forEach((child) => {
-            const el = child as HTMLElement;
-            const computed = getComputedStyle(el);
-            const fs = parseFloat(computed.fontSize);
-            if (fs) el.style.fontSize = `${fs * Math.min(scaleX, scaleY)}px`;
-          });
+          element.style.animation = 'none';
+          element.style.transform = 'none';
         },
       });
 
-      console.log("Canvas creado, generando imagen...");
-      const link = document.createElement("a");
-      link.download = `Escrito-${author || "sin-autor"}-${Date.now()}.png`;
-      link.href = canvas.toDataURL("image/png");
+      console.log('Canvas creado, generando imagen...');
+      const link = document.createElement('a');
+      const date = new Date();
+      link.download = `Escrito-${author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(date)}.png`;
+      link.href = canvas.toDataURL('image/png');
       link.click();
-      console.log("Descarga iniciada");
+      console.log('Descarga iniciada');
     } catch (error) {
-      console.error("Error al descargar:", error);
+      console.error('Error al descargar:', error);
     } finally {
       // Esperar un momento antes de ocultar la preview
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -138,40 +140,36 @@ function App() {
   };
 
   const currentBgOption = pageBackgroundOptions.find(
-    (opt) => opt.value === pageBg,
+    (opt) => opt.value === pageBg
   );
   const isMesh = !!currentBgOption?.meshColors;
 
   const formattedTime = currentTime.toLocaleTimeString([], {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
   });
-
-  const pageTextColor = getPageTextColor(pageBg);
-  const quoteBackgroundColor = getQuoteBackgroundColor(pageBg);
-  const quoteTextColor = getQuoteTextColor(quoteBackgroundColor);
 
   return (
     <div
       className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden transition-colors duration-500"
       style={{
-        background: pageBg === "rain" || isMesh ? "#0f172a" : pageBg,
+        background: pageBg === 'rain' || isMesh ? '#0f172a' : pageBg,
       }}
     >
-      {pageBg === "rain" && <RainBackground />}
+      {pageBg === 'rain' && <RainBackground />}
       {isMesh && <MeshBackground colors={currentBgOption.meshColors} />}
 
       {/* Boton de Menu */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={`fixed top-4 left-4 z-50 p-2 hover:shadow-md rounded-lg transition-all ${
-          pageBg === "rain" || getPageTextColor(pageBg) === "#e2e8f0"
-            ? "hover:bg-slate-700/80 text-white/70 hover:text-white"
-            : "hover:bg-black/10 text-slate-700 hover:text-black"
+          pageBg === 'rain' || getPageTextColor(pageBg) === '#e2e8f0'
+            ? 'hover:bg-slate-700/80 text-white/70 hover:text-white'
+            : 'hover:bg-black/10 text-slate-700 hover:text-black'
         }`}
       >
         {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -189,8 +187,10 @@ function App() {
         setAutorFontFamily={setAutorFontFamily}
         fontSize={fontSize}
         setFontSize={setFontSize}
-        textAlign={textAlign}
-        setTextAlign={setTextAlign}
+        textHorizontalAlign={textHorizontalAlign}
+        setTextHorizontalAlign={setTextHorizontalAlign}
+        textVerticalAlign={textVerticalAlign}
+        setTextVerticalAlign={setTextVerticalAlign}
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
         text={text}
@@ -214,7 +214,8 @@ function App() {
         quoteFontFamily={quoteFontFamily}
         autorFontFamily={autorFontFamily}
         fontSize={fontSize}
-        textAlign={textAlign}
+        textHorizontalAlign={textHorizontalAlign}
+        textVerticalAlign={textVerticalAlign}
         aspectRatio={aspectRatio}
         pageTextColor={pageTextColor}
         quoteBackgroundColor={quoteBackgroundColor}

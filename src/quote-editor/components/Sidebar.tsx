@@ -8,14 +8,21 @@ import {
   Layout,
   PaletteIcon,
   CloudHail,
-} from "lucide-react";
+  AlignVerticalJustifyCenter,
+  AlignVerticalJustifyStart,
+  AlignVerticalJustifyEnd,
+} from 'lucide-react';
 import {
   pageBackgroundOptions,
   aspectRatioOptions,
-} from "../constants/options";
-import { FontPicker } from "../../design-assets/components/FontPicker";
-import type { AspectRatioOption, TextAlign } from "../types";
-import { getPageTextColor } from "../utils/colors";
+} from '../constants/options';
+import { FontPicker } from '../../design-assets/components/FontPicker';
+import type {
+  AspectRatioOption,
+  TextHorizontalAlign,
+  TextVerticalAlign,
+} from '../types';
+import { getPageTextColor } from '../utils/colors';
 
 export interface SidebarProps {
   menuOpen: boolean;
@@ -29,8 +36,10 @@ export interface SidebarProps {
   setAutorFontFamily: (font: string) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
-  textAlign: TextAlign;
-  setTextAlign: (align: TextAlign) => void;
+  textHorizontalAlign: TextHorizontalAlign;
+  setTextHorizontalAlign: (align: TextHorizontalAlign) => void;
+  textVerticalAlign: TextVerticalAlign;
+  setTextVerticalAlign: (align: TextVerticalAlign) => void;
   aspectRatio: AspectRatioOption;
   setAspectRatio: (aspect: AspectRatioOption) => void;
   text: string;
@@ -52,8 +61,10 @@ export const Sidebar = ({
   setAutorFontFamily,
   fontSize,
   setFontSize,
-  textAlign,
-  setTextAlign,
+  textHorizontalAlign,
+  setTextHorizontalAlign,
+  textVerticalAlign,
+  setTextVerticalAlign,
   aspectRatio,
   setAspectRatio,
   text,
@@ -65,7 +76,7 @@ export const Sidebar = ({
   return (
     <div
       className={`fixed top-0 left-0 h-screen w-full max-w-[320px] bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
-        menuOpen ? "translate-x-0" : "-translate-x-full"
+        menuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{
         color: getPageTextColor(pageBg),
@@ -86,18 +97,18 @@ export const Sidebar = ({
                   onClick={() => setPageBg(color.value)}
                   className={`w-full aspect-square rounded-lg transition-all hover:scale-110 flex items-center justify-center ${
                     pageBg === color.value
-                      ? "ring-2 ring-current ring-offset-2"
-                      : "ring-1 ring-slate-200"
+                      ? 'ring-2 ring-current ring-offset-2'
+                      : 'ring-1 ring-slate-200'
                   }`}
                   style={{
                     background:
-                      color.value === "rain" || isMesh
-                        ? color.meshColors?.base || "#0f172a"
+                      color.value === 'rain' || isMesh
+                        ? color.meshColors?.base || '#0f172a'
                         : color.value,
                   }}
                   title={color.name}
                 >
-                  {color.value === "rain" && (
+                  {color.value === 'rain' && (
                     <span className="text-xs">
                       <CloudHail className="w-4 h-4" />
                     </span>
@@ -168,39 +179,84 @@ export const Sidebar = ({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setTextAlign("left")}
+              onClick={() => setTextHorizontalAlign('left')}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textAlign === "left"
-                  ? "bg-slate-900 text-white border-transparent shadow-lg"
-                  : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
+                textHorizontalAlign === 'left'
+                  ? 'bg-slate-900 text-white border-transparent shadow-lg'
+                  : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignLeft
-                className={`w-5 h-5 mx-auto ${textAlign === "left" ? "text-white" : "text-black"}`}
+                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'left' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextAlign("center")}
+              onClick={() => setTextHorizontalAlign('center')}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textAlign === "center"
-                  ? "bg-slate-900 text-white border-transparent shadow-lg"
-                  : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
+                textHorizontalAlign === 'center'
+                  ? 'bg-slate-900 text-white border-transparent shadow-lg'
+                  : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignCenter
-                className={`w-5 h-5 mx-auto ${textAlign === "center" ? "text-white" : "text-black"}`}
+                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'center' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextAlign("right")}
+              onClick={() => setTextHorizontalAlign('right')}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textAlign === "right"
-                  ? "bg-slate-900 text-white border-transparent shadow-lg"
-                  : "bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white"
+                textHorizontalAlign === 'right'
+                  ? 'bg-slate-900 text-white border-transparent shadow-lg'
+                  : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignRight
-                className={`w-5 h-5 mx-auto ${textAlign === "right" ? "text-white" : "text-black"}`}
+                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'right' ? 'text-white' : 'text-black'}`}
+              />
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <div className="mb-4 flex items-center gap-2">
+            <Layout className="h-5 w-5" />
+            <h2 className="text-lg font-medium">Alineación Vertical</h2>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTextVerticalAlign('top')}
+              className={`flex-1 rounded-xl border p-3 transition-all ${
+                textVerticalAlign === 'top'
+                  ? 'border-transparent bg-slate-900 text-white shadow-lg'
+                  : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <AlignVerticalJustifyStart
+                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'top' ? 'text-white' : 'text-black'}`}
+              />
+            </button>
+            <button
+              onClick={() => setTextVerticalAlign('center')}
+              className={`flex-1 rounded-xl border p-3 transition-all ${
+                textVerticalAlign === 'center'
+                  ? 'border-transparent bg-slate-900 text-white shadow-lg'
+                  : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <AlignVerticalJustifyCenter
+                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'center' ? 'text-white' : 'text-black'}`}
+              />
+            </button>
+            <button
+              onClick={() => setTextVerticalAlign('bottom')}
+              className={`flex-1 rounded-xl border p-3 transition-all ${
+                textVerticalAlign === 'bottom'
+                  ? 'border-transparent bg-slate-900 text-white shadow-lg'
+                  : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
+              }`}
+            >
+              <AlignVerticalJustifyEnd
+                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'bottom' ? 'text-white' : 'text-black'}`}
               />
             </button>
           </div>
@@ -215,7 +271,7 @@ export const Sidebar = ({
             value={aspectRatio.value}
             onChange={(e) => {
               const selected = aspectRatioOptions.find(
-                (opt) => opt.value === e.target.value,
+                (opt) => opt.value === e.target.value
               );
               if (selected) setAspectRatio(selected);
               setFontSize(selected?.fontSize || 20);
@@ -235,7 +291,7 @@ export const Sidebar = ({
           disabled={!text.trim() || isOverflowing}
           className="w-full bg-sky-500 text-white py-4 px-2 rounded-xl font-bold hover:bg-sky-600 active:scale-[0.98] disabled:bg-sky-100 disabled:text-sky-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20"
         >
-          {isOverflowing ? "Espacio insuficiente" : "Previsualización"}
+          {isOverflowing ? 'Espacio insuficiente' : 'Previsualización'}
         </button>
 
         <button
@@ -245,10 +301,10 @@ export const Sidebar = ({
         >
           <Download className="w-5 h-5" />
           {isDownloading
-            ? "Descargando..."
+            ? 'Descargando...'
             : isOverflowing
-              ? "Reducir texto"
-              : "Descargar"}
+              ? 'Reducir texto'
+              : 'Descargar'}
         </button>
       </div>
     </div>

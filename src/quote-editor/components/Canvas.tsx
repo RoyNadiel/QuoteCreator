@@ -1,8 +1,12 @@
-import { DecorativeSidebars } from "./DecorativeSidebars";
-import { AuthorFooter } from "./AuthorFooter";
-import { X, AlertCircle } from "lucide-react";
-import type { AspectRatioOption } from "../types";
-import { useRef, useEffect } from "react";
+import { DecorativeSidebars } from './DecorativeSidebars';
+import { AuthorFooter } from './AuthorFooter';
+import { X, AlertCircle } from 'lucide-react';
+import type {
+  AspectRatioOption,
+  TextHorizontalAlign,
+  TextVerticalAlign,
+} from '../types';
+import { useRef, useEffect, useMemo } from 'react';
 
 interface CanvasProps {
   text: string;
@@ -11,7 +15,8 @@ interface CanvasProps {
   quoteFontFamily: string;
   autorFontFamily: string;
   fontSize: number;
-  textAlign: string;
+  textHorizontalAlign: TextHorizontalAlign;
+  textVerticalAlign: TextVerticalAlign;
   aspectRatio: AspectRatioOption;
   pageTextColor: string;
   quoteBackgroundColor: string;
@@ -32,7 +37,8 @@ function Canvas({
   quoteFontFamily,
   autorFontFamily,
   fontSize,
-  textAlign,
+  textHorizontalAlign,
+  textVerticalAlign,
   aspectRatio,
   pageTextColor,
   quoteBackgroundColor,
@@ -46,30 +52,56 @@ function Canvas({
   setIsOverflowing,
 }: CanvasProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lienzoRef = useRef<HTMLDivElement>(null);
 
-  // Check for overflow whenever text, font size, or aspect ratio changes
+  const verticalJustify = useMemo(() => {
+    switch (textVerticalAlign) {
+      case 'top':
+        return 'justify-start';
+      case 'center':
+        return 'justify-center';
+      case 'bottom':
+        return 'justify-end';
+      default:
+        return 'justify-start';
+    }
+  }, [textVerticalAlign]);
+
+  // Auto-ajusta altura del textarea y comprueba desbordamiento contra el div contenedor
   useEffect(() => {
-    const checkOverflow = () => {
-      if (textareaRef.current) {
-        const hasOverflow =
-          textareaRef.current.scrollHeight > textareaRef.current.clientHeight;
-        setIsOverflowing(hasOverflow);
+    const checkHeightAndOverflow = () => {
+      const textarea = textareaRef.current;
+      const lienzo = lienzoRef.current;
 
-        // If it was already overflowing and the user added text, we might want to revert?
-        // But if they are deleting, it should be fine.
-        // For now, let's just use it to show a warning.
+      if (textarea && lienzo) {
+        // 1. Resetear a "auto" para que scrollHeight refleje el contenido real
+        textarea.style.height = 'auto';
+        const contentHeight = textarea.scrollHeight;
+        // 2. Aplicar esa altura al textarea (crece con el contenido)
+        textarea.style.height = `${contentHeight}px`;
+
+        // 3. Comparar contra el div lienzoRef (el límite real del lienzo)
+        const hasOverflow = contentHeight > lienzo.clientHeight;
+        setIsOverflowing(hasOverflow);
       }
     };
 
-    checkOverflow();
-    window.addEventListener("resize", checkOverflow);
-    // Use a small timeout to ensure DOM has updated if fonts are still loading
-    const timer = setTimeout(checkOverflow, 100);
+    checkHeightAndOverflow();
+    // Pequeño retardo para asegurar que la fuente se haya aplicado
+    const timer = setTimeout(checkHeightAndOverflow, 100);
+    window.addEventListener('resize', checkHeightAndOverflow);
     return () => {
-      window.removeEventListener("resize", checkOverflow);
+      window.removeEventListener('resize', checkHeightAndOverflow);
       clearTimeout(timer);
     };
-  }, [text, fontSize, aspectRatio]);
+  }, [
+    text,
+    fontSize,
+    textHorizontalAlign,
+    textVerticalAlign,
+    aspectRatio,
+    setIsOverflowing,
+  ]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
@@ -84,13 +116,13 @@ function Canvas({
 
     if (isAdding) {
       // Create a hidden mirror element to test the height
-      const mirror = document.createElement("div");
+      const mirror = document.createElement('div');
       const style = window.getComputedStyle(textarea);
 
       // Copy relevant styles
-      mirror.style.position = "absolute";
-      mirror.style.visibility = "hidden";
-      mirror.style.height = "auto";
+      mirror.style.position = 'absolute';
+      mirror.style.visibility = 'hidden';
+      mirror.style.height = 'auto';
       mirror.style.width = `${textarea.clientWidth}px`;
       mirror.style.fontFamily = style.fontFamily;
       mirror.style.fontSize = style.fontSize;
@@ -98,12 +130,14 @@ function Canvas({
       mirror.style.padding = style.padding;
       mirror.style.border = style.border;
       mirror.style.boxSizing = style.boxSizing;
-      mirror.style.whiteSpace = "pre-wrap";
-      mirror.style.wordBreak = "break-word";
+      mirror.style.whiteSpace = 'pre-wrap';
+      mirror.style.wordBreak = 'break-word';
       mirror.innerText = newValue;
 
       document.body.appendChild(mirror);
-      const willOverflow = mirror.scrollHeight > textarea.clientHeight;
+      const limitHeight =
+        lienzoRef.current?.clientHeight || textarea.clientHeight;
+      const willOverflow = mirror.scrollHeight > limitHeight;
       document.body.removeChild(mirror);
 
       if (willOverflow) {
@@ -122,7 +156,7 @@ function Canvas({
       <div className="flex-1 flex items-center justify-center z-10 relative">
         <DecorativeSidebars
           textLength={text.length}
-          aspectRatioName={aspectRatio.name.split(" ")[0]}
+          aspectRatioName={aspectRatio.name.split(' ')[0]}
           color={pageTextColor}
         />
         <h2
@@ -140,30 +174,36 @@ function Canvas({
 
         <div
           className="flex flex-col items-center border-2 z-50 p-6 sm:p-8 md:p-12 shadow-2xl transition-all duration-300 relative group"
+          ref={lienzoRef}
           style={{
             borderColor: `${pageTextColor}1a`,
             aspectRatio: aspectRatio.value,
-            height: "80vh",
-            maxHeight: "80vh",
-            maxWidth: "90vw",
+            height: '80vh',
+            maxHeight: '80vh',
+            maxWidth: '90vw',
           }}
         >
-          <textarea
-            ref={textareaRef}
-            name="Quote"
-            value={text}
-            onChange={handleTextChange}
-            placeholder="Comienza a escribir..."
-            className={`w-full flex-1 border-none outline-none resize-none leading-relaxed bg-transparent placeholder:text-slate-500/80 z-20 transition-colors duration-300 scrollbar-hide ${
-              isOverflowing ? "text-red-500" : ""
-            }`}
-            style={{
-              fontFamily: quoteFontFamily,
-              fontSize: `${fontSize}px`,
-              textAlign: textAlign as any,
-              color: isOverflowing ? "#ef4444" : pageTextColor,
-            }}
-          />
+          <div
+            className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden`}
+          >
+            <textarea
+              ref={textareaRef}
+              name="Quote"
+              autoFocus
+              value={text}
+              onChange={handleTextChange}
+              placeholder="Comienza a escribir..."
+              className={`scrollbar-hide z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
+                isOverflowing ? 'text-red-500' : ''
+              }`}
+              style={{
+                fontFamily: quoteFontFamily,
+                fontSize: `${fontSize}px`,
+                textAlign: textHorizontalAlign,
+                color: isOverflowing ? '#ef4444' : pageTextColor,
+              }}
+            />
+          </div>
           {isOverflowing && (
             <div className="absolute top-2 right-2 flex items-center gap-1.5 text-red-500 bg-red-500/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-red-500/20 text-[10px] font-semibold animate-pulse z-30 uppercase tracking-wider">
               <AlertCircle className="w-3 h-3" />
@@ -197,9 +237,9 @@ function Canvas({
               background: quoteBackgroundColor,
               color: quoteTextColor,
               borderColor: `${pageTextColor}1a`,
-              height: "80vh",
-              maxHeight: "80vh",
-              maxWidth: "90vw",
+              height: '80vh',
+              maxHeight: '80vh',
+              maxWidth: '90vw',
             }}
           >
             {!isDownloading && (
@@ -212,14 +252,14 @@ function Canvas({
               </button>
             )}
             <div
-              className="w-full flex-1 whitespace-pre-wrap wrap-break-words leading-relaxed"
+              className={`wrap-break-words flex w-full flex-1 flex-col leading-relaxed whitespace-pre-wrap ${verticalJustify}`}
               style={{
                 fontFamily: quoteFontFamily,
                 fontSize: `${fontSize}px`,
-                textAlign: textAlign as any,
+                textAlign: textHorizontalAlign,
               }}
             >
-              {text}
+              <div className="w-full">{text}</div>
             </div>
             <AuthorFooter
               author={author}
