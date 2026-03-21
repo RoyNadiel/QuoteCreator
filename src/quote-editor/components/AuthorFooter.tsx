@@ -19,8 +19,8 @@ export const AuthorFooter = ({
 
   return (
     <div
-      className="w-full pt-4 md:pt-6 mt-auto border-t flex justify-between gap-x-6 items-center opacity-80 z-20 transition-colors duration-300"
-      style={{ borderColor, color }}
+      className="w-full mt-auto border-t flex justify-between gap-x-6 items-center opacity-80 z-20 transition-colors duration-300"
+      style={{ borderColor, color, paddingTop: '0.8rem' }}
     >
       <div className="text-[10px] sm:text-xs font-mono tracking-widest opacity-60">
         {timeString}

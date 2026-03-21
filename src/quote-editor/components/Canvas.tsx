@@ -81,12 +81,17 @@ function Canvas({
         textarea.style.height = `${contentHeight}px`;
 
         // 3. Comparar contra el div lienzoRef (el límite real del lienzo)
-        const hasOverflow = contentHeight > lienzo.clientHeight;
+        const hasOverflow = contentHeight >= lienzo.clientHeight;
+        console.log('Scroll-Height: ', textarea.scrollHeight);
+        console.log('Content-Height: ', contentHeight);
+
         setIsOverflowing(hasOverflow);
       }
     };
 
-    checkHeightAndOverflow();
+    setTimeout(() => {
+      checkHeightAndOverflow();
+    }, 300);
     // Pequeño retardo para asegurar que la fuente se haya aplicado
     const timer = setTimeout(checkHeightAndOverflow, 100);
     window.addEventListener('resize', checkHeightAndOverflow);
@@ -172,18 +177,24 @@ function Canvas({
           Creator
         </h2>
 
-        <div
-          className="flex flex-col items-center border-2 z-50 p-6 sm:p-8 md:p-12 shadow-2xl transition-all duration-300 relative group"
-          ref={lienzoRef}
+        <section
+          className="flex flex-col items-center border-2 z-50 shadow-2xl transition-all duration-200 relative group"
           style={{
             borderColor: `${pageTextColor}1a`,
             aspectRatio: aspectRatio.value,
             height: '80vh',
             maxHeight: '80vh',
             maxWidth: '90vw',
+            padding: '2rem',
           }}
         >
+          <div className="absolute -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60">
+            {Intl.DateTimeFormat('es-VE', {
+              timeStyle: 'long',
+            }).format(new Date())}
+          </div>
           <div
+            ref={lienzoRef}
             className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden`}
           >
             <textarea
@@ -218,20 +229,20 @@ function Canvas({
             color={pageTextColor}
             borderColor={`${pageTextColor}1a`}
           />
-        </div>
+        </section>
       </div>
 
       {/* ── PREVIEW / CAPTURA ── */}
       {showPreview && (
         <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50 p-6"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center animate-fadeIn z-50"
           onClick={() => setShowPreview(false)}
         >
           <div
             id="download-capture"
-            ref={previewRef}
             onClick={(e) => e.stopPropagation()}
-            className="relative border animate-scaleIn flex flex-col items-center p-6 sm:p-8 md:p-12"
+            className="relative border flex flex-col items-center"
+            ref={previewRef}
             style={{
               aspectRatio: aspectRatio.value,
               background: quoteBackgroundColor,
@@ -240,26 +251,31 @@ function Canvas({
               height: '80vh',
               maxHeight: '80vh',
               maxWidth: '90vw',
+              padding: '2rem',
             }}
           >
             {!isDownloading && (
               <button
                 name="xmark"
-                className="absolute top-4 right-6 p-2 text-current opacity-40 hover:opacity-100 transition-opacity"
+                className="absolute top-2 right-2 cursor-pointer p-2 text-current opacity-40 hover:opacity-100 transition-opacity"
                 onClick={() => setShowPreview(false)}
               >
                 <X className="w-6 h-6" />
               </button>
             )}
             <div
-              className={`wrap-break-words flex w-full flex-1 flex-col leading-relaxed whitespace-pre-wrap ${verticalJustify}`}
-              style={{
-                fontFamily: quoteFontFamily,
-                fontSize: `${fontSize}px`,
-                textAlign: textHorizontalAlign,
-              }}
+              className={`wrap-break-words flex w-full flex-1 flex-col whitespace-pre-wrap ${verticalJustify}`}
             >
-              <div className="w-full">{text}</div>
+              <div
+                className="w-full leading-relaxed"
+                style={{
+                  fontFamily: quoteFontFamily,
+                  fontSize: `${fontSize}px`,
+                  textAlign: textHorizontalAlign,
+                }}
+              >
+                {text}
+              </div>
             </div>
             <AuthorFooter
               author={author}

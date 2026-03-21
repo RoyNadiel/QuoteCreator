@@ -84,11 +84,9 @@ function App() {
 
       const isGradient = quoteBackgroundColor.startsWith('linear-gradient');
 
-      // Capturamos el elemento exactamente tal como está en pantalla.
-      // Así el font-size de la imagen es idéntico al del lienzo.
-      // Usamos devicePixelRatio para que la imagen sea nítida en pantallas retina,
-      // pero sin cambiar el tamaño relativo de nada.
-      const rect = previewRef.current.getBoundingClientRect();
+      // Usamos offsetWidth/Height para ignorar transformaciones si la animación sigue corriendo.
+      const width = previewRef.current.offsetWidth;
+      const height = previewRef.current.offsetHeight;
       const devicePixelRatio = window.devicePixelRatio || 1;
 
       const canvas = await html2canvas(previewRef.current, {
@@ -97,8 +95,8 @@ function App() {
         useCORS: true,
         allowTaint: true,
         scale: devicePixelRatio,
-        width: rect.width,
-        height: rect.height,
+        width: width,
+        height: height,
         scrollX: 0,
         scrollY: 0,
         onclone: (_clonedDoc, element) => {
@@ -109,13 +107,13 @@ function App() {
           element.style.position = 'fixed';
           element.style.top = '0';
           element.style.left = '0';
-          element.style.width = `${rect.width}px`;
-          element.style.height = `${rect.height}px`;
+          element.style.width = `${width}px`;
+          element.style.height = `${height}px`;
           // No sobreescribimos height — el CSS lo maneja igual que en pantalla
           element.style.maxWidth = 'none';
           element.style.maxHeight = 'none';
           element.style.aspectRatio = 'auto';
-          element.style.border = 'none';
+          element.style.borderColor = 'transparent'; // Mantenemos el borde pero invisible para evitar cambios de layout
           element.style.background = quoteBackgroundColor;
           element.style.animation = 'none';
           element.style.transform = 'none';
@@ -125,7 +123,7 @@ function App() {
       console.log('Canvas creado, generando imagen...');
       const link = document.createElement('a');
       const date = new Date();
-      link.download = `Escrito-${author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(date)}.png`;
+      link.download = `Escrito-${author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'medium' }).format(date)}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       console.log('Descarga iniciada');
@@ -144,14 +142,9 @@ function App() {
   );
   const isMesh = !!currentBgOption?.meshColors;
 
-  const formattedTime = currentTime.toLocaleTimeString([], {
-    day: '2-digit',
-    month: '2-digit',
-    year: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+  const formattedTime = Intl.DateTimeFormat('es-VE', {
+    dateStyle: 'medium',
+  }).format(currentTime);
 
   return (
     <div
