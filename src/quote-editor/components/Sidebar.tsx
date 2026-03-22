@@ -17,10 +17,7 @@ import {
   aspectRatioOptions,
 } from '../constants/options';
 import { FontPicker } from '../../design-assets/components/FontPicker';
-import type {
-  AspectRatioOption,
-  QuotePage,
-} from '../types';
+import type { AspectRatioOption, QuotePage } from '../types';
 import { getContrastColor } from '../utils/colors';
 
 export interface SidebarProps {
@@ -60,7 +57,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <div
-      className={`fixed top-0 left-0 h-screen w-full max-w-[320px] bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-[20px_0_50px_-15px_rgba(0,0,0,0.1)] overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
+      className={`fixed top-0 left-0 h-screen w-full max-w-2xs md:max-w-81 bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-2xs overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
         menuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{
@@ -128,9 +125,9 @@ export const Sidebar = ({
             <Type className="w-5 h-5" />
             <h2 className="text-lg font-medium">Fuente del Escrito</h2>
           </div>
-          <FontPicker 
-            value={currentPage.quoteFontFamily} 
-            onChange={(quoteFontFamily) => updatePage({ quoteFontFamily })} 
+          <FontPicker
+            value={currentPage.quoteFontFamily}
+            onChange={(quoteFontFamily) => updatePage({ quoteFontFamily })}
           />
         </div>
 
