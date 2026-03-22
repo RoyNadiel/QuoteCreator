@@ -15,7 +15,7 @@ importers:
         specifier: 11.0.0
         version: 11.0.0
       framer-motion:
-        specifier: ^12.38.0
+        specifier: 12.38.0
         version: 12.38.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       html2canvas:
         specifier: 1.4.1
