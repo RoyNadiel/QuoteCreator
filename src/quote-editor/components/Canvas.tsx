@@ -1,16 +1,15 @@
 import { DecorativeSidebars } from './DecorativeSidebars';
 import { AuthorFooter } from './AuthorFooter';
 import { X, AlertCircle } from 'lucide-react';
-import type {
-  AspectRatioOption,
-  QuotePage,
-} from '../types';
+import { motion, AnimatePresence } from 'framer-motion';
+import type { AspectRatioOption, QuotePage } from '../types';
 import { useRef, useEffect, useMemo } from 'react';
 
 interface CanvasProps {
   currentPage: QuotePage;
   updatePage: (updates: Partial<QuotePage>) => void;
   fontSize: number;
+  direction: number;
   aspectRatio: AspectRatioOption;
   pageTextColor: string;
   quoteBackgroundColor: string;
@@ -28,6 +27,7 @@ function Canvas({
   currentPage,
   updatePage,
   fontSize,
+  direction,
   aspectRatio,
   pageTextColor,
   quoteBackgroundColor,
@@ -42,6 +42,23 @@ function Canvas({
 }: CanvasProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lienzoRef = useRef<HTMLDivElement>(null);
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 20 : -20,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 20 : -20,
+      opacity: 0,
+    }),
+  };
 
   const verticalJustify = useMemo(() => {
     switch (currentPage.textVerticalAlign) {
@@ -164,62 +181,74 @@ function Canvas({
           Creator
         </h2>
 
-        <section
-          className="flex flex-col items-center border-2 z-50 shadow-2xl transition-all duration-200 relative group"
-          style={{
-            borderColor: `${pageTextColor}1a`,
-            aspectRatio: aspectRatio.value,
-            height: '80vh',
-            maxHeight: '80vh',
-            maxWidth: '90vw',
-            padding: '2rem',
-          }}
-        >
-          <div
-            className="absolute hidden sm:block -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60"
-            style={{ color: pageTextColor }}
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.section
+            key={currentPage.id}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="flex flex-col items-center border-2 z-50 shadow-2xl transition-all duration-200 relative group"
+            style={{
+              borderColor: `${pageTextColor}1a`,
+              aspectRatio: aspectRatio.value,
+              height: '80vh',
+              maxHeight: '80vh',
+              maxWidth: '90vw',
+              padding: '2rem',
+            }}
           >
-            {Intl.DateTimeFormat('es-VE', {
-              timeStyle: 'long',
-            }).format(new Date())}
-          </div>
-          <div
-            ref={lienzoRef}
-            className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden`}
-          >
-            <textarea
-              ref={textareaRef}
-              name="Quote"
-              autoFocus
-              value={currentPage.text}
-              onChange={handleTextChange}
-              placeholder="Comienza a escribir..."
-              className={`scrollbar-hide z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
-                isOverflowing ? 'text-red-500' : ''
-              }`}
-              style={{
-                fontFamily: currentPage.quoteFontFamily,
-                fontSize: `${fontSize}px`,
-                textAlign: currentPage.textHorizontalAlign,
-                color: isOverflowing ? '#ef4444' : pageTextColor,
-              }}
-            />
-          </div>
-          {isOverflowing && (
-            <div className="absolute top-2 right-2 flex items-center gap-1.5 text-red-500 bg-red-500/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-red-500/20 text-[10px] font-semibold animate-pulse z-30 uppercase tracking-wider">
-              <AlertCircle className="w-3 h-3" />
-              <span>Límite de Espacio</span>
+            <div
+              className="absolute hidden md:block -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60"
+              style={{ color: pageTextColor }}
+            >
+              {Intl.DateTimeFormat('es-VE', {
+                timeStyle: 'long',
+              }).format(new Date())}
             </div>
-          )}
-          <AuthorFooter
-            author={currentPage.author}
-            autorFontFamily={currentPage.autorFontFamily}
-            fontSize={fontSize}
-            timeString={formattedTime}
-            color={pageTextColor}
-            borderColor={`${pageTextColor}1a`}
-          />
-        </section>
+            <div
+              ref={lienzoRef}
+              className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden`}
+            >
+              <textarea
+                ref={textareaRef}
+                name="Quote"
+                autoFocus
+                value={currentPage.text}
+                onChange={handleTextChange}
+                placeholder="Comienza a escribir..."
+                className={`scrollbar-hide z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
+                  isOverflowing ? 'text-red-500' : ''
+                }`}
+                style={{
+                  fontFamily: currentPage.quoteFontFamily,
+                  fontSize: `${fontSize}px`,
+                  textAlign: currentPage.textHorizontalAlign,
+                  color: isOverflowing ? '#ef4444' : pageTextColor,
+                }}
+              />
+            </div>
+            {isOverflowing && (
+              <div className="absolute top-2 right-2 flex items-center gap-1.5 text-red-500 bg-red-500/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-red-500/20 text-[10px] font-semibold animate-pulse z-30 uppercase tracking-wider">
+                <AlertCircle className="w-3 h-3" />
+                <span>Límite de Espacio</span>
+              </div>
+            )}
+            <AuthorFooter
+              author={currentPage.author}
+              autorFontFamily={currentPage.autorFontFamily}
+              fontSize={fontSize}
+              timeString={formattedTime}
+              color={pageTextColor}
+              borderColor={`${pageTextColor}1a`}
+            />
+          </motion.section>
+        </AnimatePresence>
       </div>
 
       {/* ── PREVIEW / CAPTURA ── */}

@@ -35,6 +35,7 @@ const createNewPage = (): QuotePage => ({
 function App() {
   const [pages, setPages] = useState<QuotePage[]>([createNewPage()]);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
   const currentPage = useMemo(
     () => pages[currentPageIndex] || pages[0],
@@ -81,8 +82,14 @@ function App() {
     });
   };
 
+  const handlePageChange = (newIndex: number) => {
+    setDirection(newIndex > currentPageIndex ? 1 : -1);
+    setCurrentPageIndex(newIndex);
+  };
+
   const addNewPage = () => {
     if (pages.length >= 10) return;
+    setDirection(1);
     setPages((prev) => [...prev, createNewPage()]);
     setCurrentPageIndex(pages.length);
   };
@@ -90,9 +97,19 @@ function App() {
   const deletePage = (index: number) => {
     if (pages.length <= 1) return; // No permitir borrar la última página
 
+    setDirection(-1);
     setPages((prev) => prev.filter((_, i) => i !== index));
     if (currentPageIndex >= index && currentPageIndex > 0) {
       setCurrentPageIndex((prev) => prev - 1);
+    }
+  };
+
+  const handleReorder = (newPages: QuotePage[]) => {
+    const currentId = pages[currentPageIndex].id;
+    setPages(newPages);
+    const newIndex = newPages.findIndex((p) => p.id === currentId);
+    if (newIndex !== -1 && newIndex !== currentPageIndex) {
+      setCurrentPageIndex(newIndex);
     }
   };
 
@@ -199,7 +216,7 @@ function App() {
         // Change to the current page to render it
         setCurrentPageIndex(i);
         // Wait for React to render the new page content and DOM to update
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
         if (!previewRef.current) continue;
 
@@ -329,6 +346,7 @@ function App() {
         updatePage={updateCurrentPage}
         fontSize={fontSize}
         aspectRatio={aspectRatio}
+        direction={direction}
         pageTextColor={pageTextColor}
         quoteBackgroundColor={quoteBackgroundColor}
         formattedTime={formattedTime}
@@ -344,9 +362,10 @@ function App() {
       <PageNavigation
         pages={pages}
         currentPageIndex={currentPageIndex}
-        onPageChange={setCurrentPageIndex}
+        onPageChange={handlePageChange}
         onAddPage={addNewPage}
         onDeletePage={deletePage}
+        onReorder={handleReorder}
         pageTextColor={pageTextColor}
       />
     </div>

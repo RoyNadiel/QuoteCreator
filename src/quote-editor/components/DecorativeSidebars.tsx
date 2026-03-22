@@ -21,7 +21,7 @@ export const DecorativeSidebars = ({
       <div className="text-xs uppercase font-mono">Studio V1</div>
     </div>
     <div
-      className="absolute flex justify-center items-center gap-x-4 bottom-1/25 -translate-y-1/2 md:flex md:flex-col md:gap-y-6 md:-right-20 md:top-1/2 md:vertical-text pointer-events-none opacity-50"
+      className="hidden absolute md:justify-center md:items-center md:gap-x-4 md:bottom-1/25 md:-translate-y-1/2 md:flex md:flex-col md:gap-y-6 md:-right-20 md:top-1/2 md:vertical-text pointer-events-none opacity-50"
       style={{ color }}
     >
       <span className="text-xs uppercase font-mono tracking-widest">

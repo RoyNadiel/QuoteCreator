@@ -88,7 +88,7 @@ export const pageBackgroundOptions: BackgroundOption[] = [
   // Pastel Gradients
   {
     name: 'Sunset Pastel',
-    value: 'linear-gradient(135deg, #fcd34d80, #fda4af80)',
+    value: 'linear-gradient(135deg, #FEE9A6, #FED2D7)',
     isDark: false,
   },
   {
