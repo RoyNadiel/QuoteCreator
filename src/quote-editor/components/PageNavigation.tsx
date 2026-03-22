@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { Reorder } from 'framer-motion';
 import type { QuotePage } from '../types';
@@ -21,6 +22,31 @@ export const PageNavigation = ({
   onReorder,
   pageTextColor,
 }: PageNavigationProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorar atajos si el usuario está escribiendo
+      if (
+        document.activeElement?.tagName === 'TEXTAREA' ||
+        document.activeElement?.tagName === 'INPUT'
+      ) {
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        if (currentPageIndex > 0) {
+          onPageChange(currentPageIndex - 1);
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (currentPageIndex < pages.length - 1) {
+          onPageChange(currentPageIndex + 1);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentPageIndex, pages.length, onPageChange]);
+
   return (
     <div
       className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-4 py-2 bg-black/10 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl transition-colors duration-300"
@@ -64,6 +90,15 @@ export const PageNavigation = ({
       >
         <ChevronRight className="w-5 h-5" />
       </button>
+
+      <div className="w-px h-6 bg-current opacity-20 mx-1" />
+
+      <div
+        className="px-2 font-mono text-xs opacity-70 cursor-default select-none"
+        title="Página actual / Total de páginas"
+      >
+        {currentPageIndex + 1} / {pages.length}
+      </div>
 
       <div className="w-px h-6 bg-current opacity-20 mx-1" />
 

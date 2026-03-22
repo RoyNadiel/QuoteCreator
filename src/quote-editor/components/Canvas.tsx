@@ -43,19 +43,19 @@ function Canvas({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lienzoRef = useRef<HTMLDivElement>(null);
 
-  const slideVariants = {
+  const depthVariants = {
     enter: (direction: number) => ({
-      x: direction > 0 ? 20 : -20,
+      scale: direction > 0 ? 0.95 : 1.05,
       opacity: 0,
     }),
     center: {
       zIndex: 1,
-      x: 0,
+      scale: 1,
       opacity: 1,
     },
     exit: (direction: number) => ({
       zIndex: 0,
-      x: direction < 0 ? 20 : -20,
+      scale: direction < 0 ? 0.95 : 1.05,
       opacity: 0,
     }),
   };
@@ -185,13 +185,13 @@ function Canvas({
           <motion.section
             key={currentPage.id}
             custom={direction}
-            variants={slideVariants}
+            variants={depthVariants}
             initial="enter"
             animate="center"
             exit="exit"
             transition={{
-              x: { type: 'spring', stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 },
+              scale: { type: 'tween', ease: 'easeInOut', duration: 0.2 },
+              opacity: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
             }}
             className="flex flex-col items-center border-2 z-50 shadow-2xl transition-all duration-200 relative group"
             style={{
