@@ -159,7 +159,8 @@ export const Sidebar = ({
         </div>
 
         <div>
-          <label className="text-sm mb-2 block">
+          <label className=" flex items-center gap-x-2 text-lg font-medium mb-2">
+            <Type className="w-5 h-5" />
             Tamaño de fuente: {fontSize}px
           </label>
           <input
@@ -289,7 +290,7 @@ export const Sidebar = ({
         <button
           onClick={() => setShowPreview(true)}
           disabled={!text.trim() || isOverflowing}
-          className="w-full bg-sky-500 text-white py-4 px-2 rounded-xl font-bold hover:bg-sky-600 active:scale-[0.98] disabled:bg-sky-100 disabled:text-sky-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-sky-500/20"
+          className="w-full bg-sky-500 text-white py-4 px-2 rounded-xl font-bold hover:bg-sky-600 active:scale-[0.98] disabled:bg-sky-100 disabled:text-sky-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 font-bellota"
         >
           {isOverflowing ? 'Espacio insuficiente' : 'Previsualización'}
         </button>
@@ -297,7 +298,7 @@ export const Sidebar = ({
         <button
           onClick={handleDownload}
           disabled={!text.trim() || isDownloading || isOverflowing}
-          className="w-full bg-indigo-900 text-white py-4 rounded-xl font-bold hover:bg-indigo-950 active:scale-[0.98] disabled:bg-slate-500 disabled disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-lg shadow-black/10"
+          className="w-full py-4 rounded-xl active:scale-[0.98] disabled:bg-slate-500 disabled disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white font-bellota"
         >
           <Download className="w-5 h-5" />
           {isDownloading
