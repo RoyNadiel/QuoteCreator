@@ -22,7 +22,7 @@ import type {
   TextHorizontalAlign,
   TextVerticalAlign,
 } from '../types';
-import { getPageTextColor } from '../utils/colors';
+import { getContrastColor } from '../utils/colors';
 
 export interface SidebarProps {
   menuOpen: boolean;
@@ -79,7 +79,7 @@ export const Sidebar = ({
         menuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{
-        color: getPageTextColor(pageBg),
+        color: getContrastColor(pageBg, 'ui'),
       }}
     >
       <div className="p-4 sm:p-6 pt-16 sm:pt-16 space-y-6">

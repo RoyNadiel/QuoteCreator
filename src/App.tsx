@@ -10,8 +10,7 @@ import {
   pageBackgroundOptions,
 } from './quote-editor/constants/options';
 import {
-  getQuoteTextColor,
-  getPageTextColor,
+  getContrastColor,
   getQuoteBackgroundColor,
 } from './quote-editor/utils/colors';
 import type {
@@ -31,7 +30,7 @@ function App() {
   const [textHorizontalAlign, setTextHorizontalAlign] =
     useState<TextHorizontalAlign>('center');
   const [textVerticalAlign, setTextVerticalAlign] =
-    useState<TextVerticalAlign>('center');
+    useState<TextVerticalAlign>('top');
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
   const [pageBg, setPageBg] = useState(
     'linear-gradient(135deg, #fdf2f8, #f5f3ff)'
@@ -43,9 +42,9 @@ function App() {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const pageTextColor = getPageTextColor(pageBg);
+  const pageTextColor = getContrastColor(pageBg, 'ui');
   const quoteBackgroundColor = getQuoteBackgroundColor(pageBg);
-  const quoteTextColor = getQuoteTextColor(quoteBackgroundColor);
+  const quoteTextColor = getContrastColor(quoteBackgroundColor);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -167,7 +166,7 @@ function App() {
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={`fixed top-4 left-4 z-50 p-2 hover:shadow-md rounded-lg transition-all ${
-          pageBg === 'rain' || getPageTextColor(pageBg) === '#e2e8f0'
+          pageBg === 'rain' || getContrastColor(pageBg, 'ui') === '#e2e8f0'
             ? 'hover:bg-slate-700/80 text-white/70 hover:text-white'
             : 'hover:bg-black/10 text-slate-700 hover:text-black'
         }`}
