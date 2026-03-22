@@ -21,3 +21,13 @@ export interface BackgroundOption {
     base: string;
   };
 }
+
+export interface QuotePage {
+  id: string;
+  text: string;
+  author: string;
+  quoteFontFamily: string;
+  autorFontFamily: string;
+  textHorizontalAlign: TextHorizontalAlign;
+  textVerticalAlign: TextVerticalAlign;
+}

@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Menu, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { v4 as uuidv4 } from 'uuid';
+import JSZip from 'jszip';
 import { loadGoogleFont } from './design-assets/utils/fonts';
 import { RainBackground } from './design-assets/components/RainBackground';
 import { MeshBackground } from './design-assets/components/MeshBackground';
@@ -13,28 +15,35 @@ import {
   getContrastColor,
   getQuoteBackgroundColor,
 } from './quote-editor/utils/colors';
-import type {
-  TextHorizontalAlign,
-  TextVerticalAlign,
-} from './quote-editor/types';
+import type { QuotePage } from './quote-editor/types';
 import Canvas from './quote-editor/components/Canvas';
+import { PageNavigation } from './quote-editor/components/PageNavigation';
+
+// --- Helper Func ---
+const createNewPage = (): QuotePage => ({
+  id: uuidv4(),
+  text: '',
+  author: '',
+  quoteFontFamily: 'Inconsolata',
+  autorFontFamily: 'Bellota',
+  textHorizontalAlign: 'center',
+  textVerticalAlign: 'top',
+});
 
 // --- Componente Principal ---
 
 function App() {
-  const [text, setText] = useState('');
-  const [author, setAuthor] = useState('');
-  const [quoteFontFamily, setQuoteFontFamily] = useState('Inconsolata');
-  const [autorFontFamily, setAutorFontFamily] = useState('Bellota');
-  const [fontSize, setFontSize] = useState(20);
-  const [textHorizontalAlign, setTextHorizontalAlign] =
-    useState<TextHorizontalAlign>('center');
-  const [textVerticalAlign, setTextVerticalAlign] =
-    useState<TextVerticalAlign>('top');
-  const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
-  const [pageBg, setPageBg] = useState(
-    'linear-gradient(135deg, #fdf2f8, #f5f3ff)'
+  const [pages, setPages] = useState<QuotePage[]>([createNewPage()]);
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+
+  const currentPage = useMemo(
+    () => pages[currentPageIndex] || pages[0],
+    [pages, currentPageIndex]
   );
+
+  const [fontSize, setFontSize] = useState(20);
+  const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
+  const [pageBg, setPageBg] = useState('rain');
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -53,15 +62,42 @@ function App() {
 
   // Cargar fuentes si son de Google al cambiar
   useEffect(() => {
-    loadGoogleFont(quoteFontFamily);
-  }, [quoteFontFamily]);
+    loadGoogleFont(currentPage.quoteFontFamily);
+  }, [currentPage.quoteFontFamily]);
 
   useEffect(() => {
-    loadGoogleFont(autorFontFamily);
-  }, [autorFontFamily]);
+    loadGoogleFont(currentPage.autorFontFamily);
+  }, [currentPage.autorFontFamily]);
+
+  // Handlers de multipáginas
+  const updateCurrentPage = (updates: Partial<QuotePage>) => {
+    setPages((prevPages) => {
+      const newPages = [...prevPages];
+      newPages[currentPageIndex] = {
+        ...newPages[currentPageIndex],
+        ...updates,
+      };
+      return newPages;
+    });
+  };
+
+  const addNewPage = () => {
+    if (pages.length >= 10) return;
+    setPages((prev) => [...prev, createNewPage()]);
+    setCurrentPageIndex(pages.length);
+  };
+
+  const deletePage = (index: number) => {
+    if (pages.length <= 1) return; // No permitir borrar la última página
+
+    setPages((prev) => prev.filter((_, i) => i !== index));
+    if (currentPageIndex >= index && currentPageIndex > 0) {
+      setCurrentPageIndex((prev) => prev - 1);
+    }
+  };
 
   const handleDownload = async () => {
-    if (!text.trim()) {
+    if (!currentPage.text.trim()) {
       console.log('No hay texto para descargar');
       return;
     }
@@ -129,7 +165,7 @@ function App() {
       console.log('Canvas creado, generando imagen...');
       const link = document.createElement('a');
       const date = new Date();
-      link.download = `Escrito-${author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'medium' }).format(date)}.png`;
+      link.download = `Escrito-${currentPage.author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'medium' }).format(date)}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       console.log('Descarga iniciada');
@@ -137,6 +173,95 @@ function App() {
       console.error('Error al descargar:', error);
     } finally {
       // Esperar un momento antes de ocultar la preview
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setShowPreview(false);
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (pages.length === 0 || !pages.some((p) => p.text.trim())) {
+      console.log('No hay texto para descargar');
+      return;
+    }
+
+    console.log('Iniciando descarga de todas las páginas...');
+    setIsDownloading(true);
+    setShowPreview(true);
+
+    try {
+      const zip = new JSZip();
+      const originalIndex = currentPageIndex;
+      const scale = 3;
+
+      for (let i = 0; i < pages.length; i++) {
+        if (!pages[i].text.trim()) continue;
+        // Change to the current page to render it
+        setCurrentPageIndex(i);
+        // Wait for React to render the new page content and DOM to update
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        if (!previewRef.current) continue;
+
+        const width = previewRef.current.offsetWidth;
+        const height = previewRef.current.offsetHeight;
+
+        const canvas = await html2canvas(previewRef.current, {
+          backgroundColor: quoteBackgroundColor.startsWith('linear-gradient')
+            ? null
+            : quoteBackgroundColor,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          width: width,
+          height: height,
+          scrollX: 0,
+          scrollY: 0,
+          imageTimeout: 0,
+          onclone: (_clonedDoc, element) => {
+            element.style.setProperty('-webkit-font-smoothing', 'antialiased');
+            element.style.setProperty('-moz-osx-font-smoothing', 'grayscale');
+            element.style.textRendering = 'optimizeLegibility';
+            element.style.position = 'fixed';
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.width = `${width}px`;
+            element.style.height = `${height}px`;
+            element.style.maxWidth = 'none';
+            element.style.maxHeight = 'none';
+            element.style.aspectRatio = 'auto';
+            element.style.borderColor = 'transparent';
+            element.style.background = quoteBackgroundColor;
+            element.style.animation = 'none';
+            element.style.transform = 'none';
+          },
+        });
+
+        // Convert canvas to blob and add to ZIP
+        const blob = await new Promise<Blob | null>((resolve) =>
+          canvas.toBlob(resolve, 'image/png')
+        );
+        if (blob) {
+          const numberStr = (i + 1).toString().padStart(2, '0');
+          zip.file(`Escrito-${numberStr}.png`, blob);
+        }
+      }
+
+      console.log('Generando archivo ZIP...');
+      const content = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      const date = new Date();
+      link.download = `Escritos-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(date)}.zip`;
+      link.href = URL.createObjectURL(content);
+      link.click();
+      URL.revokeObjectURL(link.href);
+
+      // Restore original page
+      setCurrentPageIndex(originalIndex);
+    } catch (error) {
+      console.error('Error al descargar ZIP:', error);
+    } finally {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setShowPreview(false);
       setIsDownloading(false);
@@ -178,23 +303,16 @@ function App() {
         menuOpen={menuOpen}
         pageBg={pageBg}
         setPageBg={setPageBg}
-        author={author}
-        setAuthor={setAuthor}
-        quoteFontFamily={quoteFontFamily}
-        setQuoteFontFamily={setQuoteFontFamily}
-        autorFontFamilty={autorFontFamily}
-        setAutorFontFamily={setAutorFontFamily}
+        currentPage={currentPage}
+        updatePage={updateCurrentPage}
         fontSize={fontSize}
         setFontSize={setFontSize}
-        textHorizontalAlign={textHorizontalAlign}
-        setTextHorizontalAlign={setTextHorizontalAlign}
-        textVerticalAlign={textVerticalAlign}
-        setTextVerticalAlign={setTextVerticalAlign}
         aspectRatio={aspectRatio}
         setAspectRatio={setAspectRatio}
-        text={text}
         isDownloading={isDownloading}
         handleDownload={handleDownload}
+        handleDownloadAll={handleDownloadAll}
+        totalPages={pages.length}
         setShowPreview={setShowPreview}
         isOverflowing={isOverflowing}
       />
@@ -207,14 +325,9 @@ function App() {
       )}
 
       <Canvas
-        text={text}
-        setText={setText}
-        author={author}
-        quoteFontFamily={quoteFontFamily}
-        autorFontFamily={autorFontFamily}
+        currentPage={currentPage}
+        updatePage={updateCurrentPage}
         fontSize={fontSize}
-        textHorizontalAlign={textHorizontalAlign}
-        textVerticalAlign={textVerticalAlign}
         aspectRatio={aspectRatio}
         pageTextColor={pageTextColor}
         quoteBackgroundColor={quoteBackgroundColor}
@@ -226,6 +339,15 @@ function App() {
         isDownloading={isDownloading}
         isOverflowing={isOverflowing}
         setIsOverflowing={setIsOverflowing}
+      />
+
+      <PageNavigation
+        pages={pages}
+        currentPageIndex={currentPageIndex}
+        onPageChange={setCurrentPageIndex}
+        onAddPage={addNewPage}
+        onDeletePage={deletePage}
+        pageTextColor={pageTextColor}
       />
     </div>
   );

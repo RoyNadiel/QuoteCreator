@@ -3,20 +3,14 @@ import { AuthorFooter } from './AuthorFooter';
 import { X, AlertCircle } from 'lucide-react';
 import type {
   AspectRatioOption,
-  TextHorizontalAlign,
-  TextVerticalAlign,
+  QuotePage,
 } from '../types';
 import { useRef, useEffect, useMemo } from 'react';
 
 interface CanvasProps {
-  text: string;
-  setText: (text: string) => void;
-  author: string;
-  quoteFontFamily: string;
-  autorFontFamily: string;
+  currentPage: QuotePage;
+  updatePage: (updates: Partial<QuotePage>) => void;
   fontSize: number;
-  textHorizontalAlign: TextHorizontalAlign;
-  textVerticalAlign: TextVerticalAlign;
   aspectRatio: AspectRatioOption;
   pageTextColor: string;
   quoteBackgroundColor: string;
@@ -31,14 +25,9 @@ interface CanvasProps {
 }
 
 function Canvas({
-  text,
-  setText,
-  author,
-  quoteFontFamily,
-  autorFontFamily,
+  currentPage,
+  updatePage,
   fontSize,
-  textHorizontalAlign,
-  textVerticalAlign,
   aspectRatio,
   pageTextColor,
   quoteBackgroundColor,
@@ -55,7 +44,7 @@ function Canvas({
   const lienzoRef = useRef<HTMLDivElement>(null);
 
   const verticalJustify = useMemo(() => {
-    switch (textVerticalAlign) {
+    switch (currentPage.textVerticalAlign) {
       case 'top':
         return 'justify-start';
       case 'center':
@@ -65,7 +54,7 @@ function Canvas({
       default:
         return 'justify-start';
     }
-  }, [textVerticalAlign]);
+  }, [currentPage.textVerticalAlign]);
 
   // Auto-ajusta altura del textarea y comprueba desbordamiento contra el div contenedor
   useEffect(() => {
@@ -98,10 +87,10 @@ function Canvas({
       clearTimeout(timer);
     };
   }, [
-    text,
+    currentPage.text,
     fontSize,
-    textHorizontalAlign,
-    textVerticalAlign,
+    currentPage.textHorizontalAlign,
+    currentPage.textVerticalAlign,
     aspectRatio,
     setIsOverflowing,
   ]);
@@ -111,11 +100,11 @@ function Canvas({
     const textarea = textareaRef.current;
 
     if (!textarea) {
-      setText(newValue);
+      updatePage({ text: newValue });
       return;
     }
 
-    const isAdding = newValue.length > text.length;
+    const isAdding = newValue.length > currentPage.text.length;
 
     if (isAdding) {
       // Create a hidden mirror element to test the height
@@ -149,7 +138,7 @@ function Canvas({
       }
     }
 
-    setText(newValue);
+    updatePage({ text: newValue });
     setIsOverflowing(false);
   };
 
@@ -158,7 +147,7 @@ function Canvas({
       {/* ── LIENZO EDITOR ── */}
       <div className="flex-1 flex items-center justify-center z-10 relative">
         <DecorativeSidebars
-          textLength={text.length}
+          textLength={currentPage.text.length}
           aspectRatioName={aspectRatio.name.split(' ')[0]}
           color={pageTextColor}
         />
@@ -202,16 +191,16 @@ function Canvas({
               ref={textareaRef}
               name="Quote"
               autoFocus
-              value={text}
+              value={currentPage.text}
               onChange={handleTextChange}
               placeholder="Comienza a escribir..."
               className={`scrollbar-hide z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
                 isOverflowing ? 'text-red-500' : ''
               }`}
               style={{
-                fontFamily: quoteFontFamily,
+                fontFamily: currentPage.quoteFontFamily,
                 fontSize: `${fontSize}px`,
-                textAlign: textHorizontalAlign,
+                textAlign: currentPage.textHorizontalAlign,
                 color: isOverflowing ? '#ef4444' : pageTextColor,
               }}
             />
@@ -223,8 +212,8 @@ function Canvas({
             </div>
           )}
           <AuthorFooter
-            author={author}
-            autorFontFamily={autorFontFamily}
+            author={currentPage.author}
+            autorFontFamily={currentPage.autorFontFamily}
             fontSize={fontSize}
             timeString={formattedTime}
             color={pageTextColor}
@@ -270,17 +259,17 @@ function Canvas({
               <div
                 className="w-full leading-relaxed"
                 style={{
-                  fontFamily: quoteFontFamily,
+                  fontFamily: currentPage.quoteFontFamily,
                   fontSize: `${fontSize}px`,
-                  textAlign: textHorizontalAlign,
+                  textAlign: currentPage.textHorizontalAlign,
                 }}
               >
-                {text}
+                {currentPage.text}
               </div>
             </div>
             <AuthorFooter
-              author={author}
-              autorFontFamily={autorFontFamily}
+              author={currentPage.author}
+              autorFontFamily={currentPage.autorFontFamily}
               fontSize={fontSize}
               timeString={formattedTime}
               color={quoteTextColor}

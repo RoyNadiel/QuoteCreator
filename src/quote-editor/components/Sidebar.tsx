@@ -19,8 +19,7 @@ import {
 import { FontPicker } from '../../design-assets/components/FontPicker';
 import type {
   AspectRatioOption,
-  TextHorizontalAlign,
-  TextVerticalAlign,
+  QuotePage,
 } from '../types';
 import { getContrastColor } from '../utils/colors';
 
@@ -28,23 +27,16 @@ export interface SidebarProps {
   menuOpen: boolean;
   pageBg: string;
   setPageBg: (bg: string) => void;
-  author: string;
-  setAuthor: (author: string) => void;
-  quoteFontFamily: string;
-  setQuoteFontFamily: (font: string) => void;
-  autorFontFamilty: string;
-  setAutorFontFamily: (font: string) => void;
+  currentPage: QuotePage;
+  updatePage: (updates: Partial<QuotePage>) => void;
   fontSize: number;
   setFontSize: (size: number) => void;
-  textHorizontalAlign: TextHorizontalAlign;
-  setTextHorizontalAlign: (align: TextHorizontalAlign) => void;
-  textVerticalAlign: TextVerticalAlign;
-  setTextVerticalAlign: (align: TextVerticalAlign) => void;
   aspectRatio: AspectRatioOption;
   setAspectRatio: (aspect: AspectRatioOption) => void;
-  text: string;
   isDownloading: boolean;
   handleDownload: () => void;
+  handleDownloadAll: () => void;
+  totalPages: number;
   setShowPreview: (bool: boolean) => void;
   isOverflowing: boolean;
 }
@@ -53,23 +45,16 @@ export const Sidebar = ({
   menuOpen,
   pageBg,
   setPageBg,
-  author,
-  setAuthor,
-  quoteFontFamily,
-  setQuoteFontFamily,
-  autorFontFamilty,
-  setAutorFontFamily,
+  currentPage,
+  updatePage,
   fontSize,
   setFontSize,
-  textHorizontalAlign,
-  setTextHorizontalAlign,
-  textVerticalAlign,
-  setTextVerticalAlign,
   aspectRatio,
   setAspectRatio,
-  text,
   isDownloading,
   handleDownload,
+  handleDownloadAll,
+  totalPages,
   setShowPreview,
   isOverflowing,
 }: SidebarProps) => {
@@ -131,8 +116,8 @@ export const Sidebar = ({
           </div>
           <input
             type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            value={currentPage.author}
+            onChange={(e) => updatePage({ author: e.target.value })}
             placeholder="Nombre del autor"
             className="w-full px-4 py-3 bg-slate-50 text-black border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder font-medium"
           />
@@ -143,7 +128,10 @@ export const Sidebar = ({
             <Type className="w-5 h-5" />
             <h2 className="text-lg font-medium">Fuente del Escrito</h2>
           </div>
-          <FontPicker value={quoteFontFamily} onChange={setQuoteFontFamily} />
+          <FontPicker 
+            value={currentPage.quoteFontFamily} 
+            onChange={(quoteFontFamily) => updatePage({ quoteFontFamily })} 
+          />
         </div>
 
         <div>
@@ -152,13 +140,13 @@ export const Sidebar = ({
             <h2 className="text-lg font-medium">Fuente del Autor</h2>
           </div>
           <FontPicker
-            value={autorFontFamilty}
-            onChange={setAutorFontFamily}
-            disabled={!author.trim()}
+            value={currentPage.autorFontFamily}
+            onChange={(autorFontFamily) => updatePage({ autorFontFamily })}
+            disabled={!currentPage.author.trim()}
           />
         </div>
 
-        <div>
+        <div className="mb-8">
           <label className=" flex items-center gap-x-2 text-lg font-medium mb-2">
             <Type className="w-5 h-5" />
             Tamaño de fuente: {fontSize}px
@@ -180,39 +168,39 @@ export const Sidebar = ({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setTextHorizontalAlign('left')}
+              onClick={() => updatePage({ textHorizontalAlign: 'left' })}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textHorizontalAlign === 'left'
+                currentPage.textHorizontalAlign === 'left'
                   ? 'bg-slate-900 text-white border-transparent shadow-lg'
                   : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignLeft
-                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'left' ? 'text-white' : 'text-black'}`}
+                className={`w-5 h-5 mx-auto ${currentPage.textHorizontalAlign === 'left' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextHorizontalAlign('center')}
+              onClick={() => updatePage({ textHorizontalAlign: 'center' })}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textHorizontalAlign === 'center'
+                currentPage.textHorizontalAlign === 'center'
                   ? 'bg-slate-900 text-white border-transparent shadow-lg'
                   : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignCenter
-                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'center' ? 'text-white' : 'text-black'}`}
+                className={`w-5 h-5 mx-auto ${currentPage.textHorizontalAlign === 'center' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextHorizontalAlign('right')}
+              onClick={() => updatePage({ textHorizontalAlign: 'right' })}
               className={`flex-1 p-3 rounded-xl transition-all border ${
-                textHorizontalAlign === 'right'
+                currentPage.textHorizontalAlign === 'right'
                   ? 'bg-slate-900 text-white border-transparent shadow-lg'
                   : 'bg-slate-50 border-slate-200 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignRight
-                className={`w-5 h-5 mx-auto ${textHorizontalAlign === 'right' ? 'text-white' : 'text-black'}`}
+                className={`w-5 h-5 mx-auto ${currentPage.textHorizontalAlign === 'right' ? 'text-white' : 'text-black'}`}
               />
             </button>
           </div>
@@ -225,39 +213,39 @@ export const Sidebar = ({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => setTextVerticalAlign('top')}
+              onClick={() => updatePage({ textVerticalAlign: 'top' })}
               className={`flex-1 rounded-xl border p-3 transition-all ${
-                textVerticalAlign === 'top'
+                currentPage.textVerticalAlign === 'top'
                   ? 'border-transparent bg-slate-900 text-white shadow-lg'
                   : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignVerticalJustifyStart
-                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'top' ? 'text-white' : 'text-black'}`}
+                className={`mx-auto h-5 w-5 ${currentPage.textVerticalAlign === 'top' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextVerticalAlign('center')}
+              onClick={() => updatePage({ textVerticalAlign: 'center' })}
               className={`flex-1 rounded-xl border p-3 transition-all ${
-                textVerticalAlign === 'center'
+                currentPage.textVerticalAlign === 'center'
                   ? 'border-transparent bg-slate-900 text-white shadow-lg'
                   : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignVerticalJustifyCenter
-                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'center' ? 'text-white' : 'text-black'}`}
+                className={`mx-auto h-5 w-5 ${currentPage.textVerticalAlign === 'center' ? 'text-white' : 'text-black'}`}
               />
             </button>
             <button
-              onClick={() => setTextVerticalAlign('bottom')}
+              onClick={() => updatePage({ textVerticalAlign: 'bottom' })}
               className={`flex-1 rounded-xl border p-3 transition-all ${
-                textVerticalAlign === 'bottom'
+                currentPage.textVerticalAlign === 'bottom'
                   ? 'border-transparent bg-slate-900 text-white shadow-lg'
                   : 'border-slate-200 bg-slate-50 hover:border-slate-300 hover:bg-white'
               }`}
             >
               <AlignVerticalJustifyEnd
-                className={`mx-auto h-5 w-5 ${textVerticalAlign === 'bottom' ? 'text-white' : 'text-black'}`}
+                className={`mx-auto h-5 w-5 ${currentPage.textVerticalAlign === 'bottom' ? 'text-white' : 'text-black'}`}
               />
             </button>
           </div>
@@ -274,8 +262,10 @@ export const Sidebar = ({
               const selected = aspectRatioOptions.find(
                 (opt) => opt.value === e.target.value
               );
-              if (selected) setAspectRatio(selected);
-              setFontSize(selected?.fontSize || 20);
+              if (selected) {
+                setAspectRatio(selected);
+                setFontSize(selected.fontSize || 20);
+              }
             }}
             className="w-full px-4 py-3 text-slate-900 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all cursor-pointer font-medium appearance-none"
           >
@@ -289,7 +279,7 @@ export const Sidebar = ({
 
         <button
           onClick={() => setShowPreview(true)}
-          disabled={!text.trim() || isOverflowing}
+          disabled={!currentPage.text.trim() || isOverflowing}
           className="w-full bg-sky-500 text-white py-4 px-2 rounded-xl font-bold hover:bg-sky-600 active:scale-[0.98] disabled:bg-sky-100 disabled:text-sky-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 font-bellota"
         >
           {isOverflowing ? 'Espacio insuficiente' : 'Previsualización'}
@@ -297,16 +287,25 @@ export const Sidebar = ({
 
         <button
           onClick={handleDownload}
-          disabled={!text.trim() || isDownloading || isOverflowing}
-          className="w-full py-4 rounded-xl active:scale-[0.98] disabled:bg-slate-500 disabled disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white font-bellota"
+          disabled={!currentPage.text.trim() || isDownloading || isOverflowing}
+          className="w-full py-4 rounded-xl active:scale-[0.98] disabled:bg-slate-500 disabled cursor-pointer disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 bg-orange-400 hover:bg-orange-500 text-white font-bellota"
+          title="Descargar solo esta página"
         >
           <Download className="w-5 h-5" />
-          {isDownloading
-            ? 'Descargando...'
-            : isOverflowing
-              ? 'Reducir texto'
-              : 'Descargar'}
+          Descargar Actual
         </button>
+
+        {totalPages > 1 && (
+          <button
+            onClick={handleDownloadAll}
+            disabled={isDownloading || isOverflowing}
+            className="w-full py-3 mt-1 rounded-xl active:scale-[0.98] disabled:bg-slate-500/50 disabled cursor-pointer disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 border-2 border-orange-400 text-orange-400 hover:bg-orange-50 font-bellota"
+            title="Descargar todas las páginas como archivo ZIP"
+          >
+            <Download className="w-4 h-4" />
+            Descargar Todo (ZIP)
+          </button>
+        )}
       </div>
     </div>
   );
