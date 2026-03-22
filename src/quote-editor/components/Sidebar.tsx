@@ -57,7 +57,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <div
-      className={`fixed top-0 left-0 h-screen w-full max-w-2xs md:max-w-81 bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-2xs overflow-y-auto transition-all duration-500 z-40 scrollbar-hide ${
+      className={`fixed top-0 left-0 h-screen w-full max-w-2xs md:max-w-81 bg-transparent backdrop-blur-md border-r border-slate-100/30 shadow-2xs overflow-y-auto transition-all duration-500 z-50 scrollbar-hide ${
         menuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}
       style={{
