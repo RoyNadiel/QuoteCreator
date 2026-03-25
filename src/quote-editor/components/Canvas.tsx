@@ -193,7 +193,7 @@ function Canvas({
               scale: { type: 'tween', ease: 'easeInOut', duration: 0.2 },
               opacity: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
             }}
-            className="flex flex-col items-center border-2 z-50 shadow-[0_5px_15px_rgba(149,157,200,0.8)] transition-all duration-200 relative group"
+            className="flex flex-col items-center z-50 shadow-[0_0_5px_rgba(127,127,127)] transition-all duration-200 relative group"
             style={{
               borderColor: `${pageTextColor}1a`,
               aspectRatio: aspectRatio.value,
