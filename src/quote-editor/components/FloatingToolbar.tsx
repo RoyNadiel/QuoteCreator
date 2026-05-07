@@ -32,7 +32,7 @@ export function FloatingToolbar({ containerRef }: FloatingToolbarProps) {
       // Si el rectángulo es válido
       if (rect.width > 0 && rect.height > 0) {
         setPosition({
-          top: rect.top - 50, // Posicionar arriba de la selección
+          top: rect.bottom + 15, // Posicionar debajo de la selección
           left: rect.left + rect.width / 2, // Centrado respecto a la selección
         });
         setIsVisible(true);
