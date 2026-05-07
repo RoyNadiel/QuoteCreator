@@ -5,6 +5,7 @@ interface AuthorFooterProps {
   timeString: string;
   color: string;
   borderColor: string;
+  showDate: boolean;
 }
 
 export const AuthorFooter = ({
@@ -14,6 +15,7 @@ export const AuthorFooter = ({
   timeString,
   color,
   borderColor,
+  showDate,
 }: AuthorFooterProps) => {
   if (!author) return null;
 
@@ -22,9 +24,13 @@ export const AuthorFooter = ({
       className="w-full mt-auto border-t flex justify-between gap-x-6 items-center opacity-80 z-20 transition-colors duration-300"
       style={{ borderColor, color, paddingTop: '0.8rem' }}
     >
-      <div className="text-[10px] sm:text-xs font-mono tracking-widest opacity-60">
-        {timeString}
-      </div>
+      {showDate ? (
+        <div className="text-[10px] sm:text-xs font-mono tracking-widest opacity-60">
+          {timeString}
+        </div>
+      ) : (
+        <div />
+      )}
       <p
         className="italic text-right"
         style={{

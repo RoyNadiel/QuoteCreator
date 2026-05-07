@@ -30,4 +30,5 @@ export interface QuotePage {
   autorFontFamily: string;
   textHorizontalAlign: TextHorizontalAlign;
   textVerticalAlign: TextVerticalAlign;
+  showDate: boolean;
 }

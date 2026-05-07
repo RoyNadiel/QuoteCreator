@@ -116,8 +116,17 @@ export const Sidebar = ({
             value={currentPage.author}
             onChange={(e) => updatePage({ author: e.target.value })}
             placeholder="Nombre del autor"
-            className="w-full px-4 py-3 bg-slate-50 text-black border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder font-medium"
+            className="w-full px-4 py-3 bg-slate-50 text-black border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-200 focus:bg-white transition-all placeholder font-medium mb-3"
           />
+          <label className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-slate-500/10 transition-colors w-max">
+            <input
+              type="checkbox"
+              checked={currentPage.showDate}
+              onChange={(e) => updatePage({ showDate: e.target.checked })}
+              className="w-4 h-4 rounded border-slate-300 text-sky-500 focus:ring-sky-500 bg-slate-50"
+            />
+            <span className="text-sm font-medium">Mostrar fecha de captura</span>
+          </label>
         </div>
 
         <div>

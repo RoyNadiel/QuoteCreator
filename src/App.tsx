@@ -28,6 +28,7 @@ const createNewPage = (): QuotePage => ({
   autorFontFamily: "Bellota",
   textHorizontalAlign: "center",
   textVerticalAlign: "top",
+  showDate: true,
 });
 
 // --- Componente Principal ---

@@ -222,6 +222,7 @@ function Canvas({
               timeString={formattedTime}
               color={pageTextColor}
               borderColor={`${pageTextColor}1a`}
+              showDate={currentPage.showDate}
             />
           </motion.section>
         </AnimatePresence>
@@ -278,6 +279,7 @@ function Canvas({
               timeString={formattedTime}
               color={quoteTextColor}
               borderColor={`${pageTextColor}1a`}
+              showDate={currentPage.showDate}
             />
           </div>
         </div>
