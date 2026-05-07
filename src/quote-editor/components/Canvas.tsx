@@ -4,6 +4,7 @@ import { X, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { AspectRatioOption, QuotePage } from '../types';
 import { useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import { FloatingToolbar } from './FloatingToolbar';
 
 interface CanvasProps {
   currentPage: QuotePage;
@@ -40,8 +41,9 @@ function Canvas({
   isOverflowing,
   setIsOverflowing,
 }: CanvasProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
   const lienzoRef = useRef<HTMLDivElement>(null);
+  const lastHtml = useRef(currentPage.text);
 
   const depthVariants = {
     enter: (direction: number) => ({
@@ -73,30 +75,22 @@ function Canvas({
     }
   }, [currentPage.textVerticalAlign]);
 
-  // Auto-ajusta altura del textarea y comprueba desbordamiento contra el div contenedor
+  const checkHeightAndOverflow = () => {
+    const editor = editorRef.current;
+    const lienzo = lienzoRef.current;
+
+    if (editor && lienzo) {
+      const contentHeight = editor.scrollHeight;
+      const hasOverflow = contentHeight > lienzo.clientHeight;
+      setIsOverflowing(hasOverflow);
+      return hasOverflow;
+    }
+    return false;
+  };
+
   useLayoutEffect(() => {
-    const checkHeightAndOverflow = () => {
-      const textarea = textareaRef.current;
-      const lienzo = lienzoRef.current;
-
-      if (textarea && lienzo) {
-        // 1. Resetear la altura a 0 para que scrollHeight refleje el contenido real sin causar saltos de scroll
-        textarea.style.height = '0px';
-        const contentHeight = textarea.scrollHeight;
-        // 2. Aplicar esa altura al textarea (crece con el contenido)
-        textarea.style.height = `${contentHeight}px`;
-
-        // 3. Comparar contra el div lienzoRef (el límite real del lienzo)
-        const hasOverflow = contentHeight >= lienzo.clientHeight;
-
-        setIsOverflowing(hasOverflow);
-      }
-    };
-
-    // Ejecutar inmediatamente para evitar el parpadeo y salto visual
     checkHeightAndOverflow();
 
-    // Retardos para asegurar ajustes si la fuente carga de forma asíncrona
     const timer1 = setTimeout(checkHeightAndOverflow, 100);
     const timer2 = setTimeout(checkHeightAndOverflow, 300);
 
@@ -116,51 +110,27 @@ function Canvas({
     setIsOverflowing,
   ]);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    const textarea = textareaRef.current;
+  // Sincronizar contenido si cambia externamente o se cambia de página
+  useEffect(() => {
+    if (editorRef.current && currentPage.text !== lastHtml.current) {
+      editorRef.current.innerHTML = currentPage.text;
+      lastHtml.current = currentPage.text;
+    }
+  }, [currentPage.text]);
 
-    if (!textarea) {
+  const handleTextChange = () => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const newValue = editor.innerHTML;
+
+    // Check overflow
+    checkHeightAndOverflow();
+
+    if (newValue !== lastHtml.current) {
+      lastHtml.current = newValue;
       updatePage({ text: newValue });
-      return;
     }
-
-    const isAdding = newValue.length > currentPage.text.length;
-
-    if (isAdding) {
-      // Create a hidden mirror element to test the height
-      const mirror = document.createElement('div');
-      const style = window.getComputedStyle(textarea);
-
-      // Copy relevant styles
-      mirror.style.position = 'absolute';
-      mirror.style.visibility = 'hidden';
-      mirror.style.height = 'auto';
-      mirror.style.width = `${textarea.clientWidth}px`;
-      mirror.style.fontFamily = style.fontFamily;
-      mirror.style.fontSize = style.fontSize;
-      mirror.style.lineHeight = style.lineHeight;
-      mirror.style.padding = style.padding;
-      mirror.style.border = style.border;
-      mirror.style.boxSizing = style.boxSizing;
-      mirror.style.whiteSpace = 'pre-wrap';
-      mirror.style.wordBreak = 'break-word';
-      mirror.innerText = newValue;
-
-      document.body.appendChild(mirror);
-      const limitHeight =
-        lienzoRef.current?.clientHeight || textarea.clientHeight;
-      const willOverflow = mirror.scrollHeight > limitHeight;
-      document.body.removeChild(mirror);
-
-      if (willOverflow) {
-        setIsOverflowing(true);
-        return;
-      }
-    }
-
-    updatePage({ text: newValue });
-    setIsOverflowing(false);
   };
 
   return (
@@ -217,15 +187,17 @@ function Canvas({
             </div>
             <div
               ref={lienzoRef}
-              className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden`}
+              className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden relative`}
             >
-              <textarea
-                ref={textareaRef}
-                name="Quote"
-                value={currentPage.text}
-                onChange={handleTextChange}
-                placeholder="Comienza a escribir..."
-                className={`scrollbar-hide overflow-hidden z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
+              <FloatingToolbar containerRef={lienzoRef} />
+              <div
+                ref={editorRef}
+                contentEditable
+                suppressContentEditableWarning
+                onInput={handleTextChange}
+                onBlur={handleTextChange}
+                data-placeholder="Comienza a escribir..."
+                className={`scrollbar-hide overflow-hidden z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none ${
                   isOverflowing ? 'text-red-500' : ''
                 }`}
                 style={{
@@ -233,6 +205,7 @@ function Canvas({
                   fontSize: `${fontSize}px`,
                   textAlign: currentPage.textHorizontalAlign,
                   color: isOverflowing ? '#ef4444' : pageTextColor,
+                  minHeight: `${fontSize * 1.5}px`,
                 }}
               />
             </div>
@@ -295,9 +268,8 @@ function Canvas({
                   fontSize: `${fontSize}px`,
                   textAlign: currentPage.textHorizontalAlign,
                 }}
-              >
-                {currentPage.text}
-              </div>
+                dangerouslySetInnerHTML={{ __html: currentPage.text }}
+              />
             </div>
             <AuthorFooter
               author={currentPage.author}
