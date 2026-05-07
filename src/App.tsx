@@ -1,33 +1,33 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, X } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import { v4 as uuidv4 } from 'uuid';
-import JSZip from 'jszip';
-import { loadGoogleFont } from './design-assets/utils/fonts';
-import { RainBackground } from './design-assets/components/RainBackground';
-import { MeshBackground } from './design-assets/components/MeshBackground';
-import { Sidebar } from './quote-editor/components/Sidebar';
+import { useState, useRef, useEffect, useMemo } from "react";
+import { Menu, X } from "lucide-react";
+import html2canvas from "html2canvas";
+import { v4 as uuidv4 } from "uuid";
+import JSZip from "jszip";
+import { loadGoogleFont } from "./design-assets/utils/fonts";
+import { RainBackground } from "./design-assets/components/RainBackground";
+import { MeshBackground } from "./design-assets/components/MeshBackground";
+import { Sidebar } from "./quote-editor/components/Sidebar";
 import {
   aspectRatioOptions,
   pageBackgroundOptions,
-} from './quote-editor/constants/options';
+} from "./quote-editor/constants/options";
 import {
   getContrastColor,
   getQuoteBackgroundColor,
-} from './quote-editor/utils/colors';
-import type { QuotePage } from './quote-editor/types';
-import Canvas from './quote-editor/components/Canvas';
-import { PageNavigation } from './quote-editor/components/PageNavigation';
+} from "./quote-editor/utils/colors";
+import type { QuotePage } from "./quote-editor/types";
+import Canvas from "./quote-editor/components/Canvas";
+import { PageNavigation } from "./quote-editor/components/PageNavigation";
 
 // --- Helper Func ---
 const createNewPage = (): QuotePage => ({
   id: uuidv4(),
-  text: '',
-  author: '',
-  quoteFontFamily: 'Inconsolata',
-  autorFontFamily: 'Bellota',
-  textHorizontalAlign: 'center',
-  textVerticalAlign: 'top',
+  text: "",
+  author: "",
+  quoteFontFamily: "Inconsolata",
+  autorFontFamily: "Bellota",
+  textHorizontalAlign: "center",
+  textVerticalAlign: "top",
 });
 
 // --- Componente Principal ---
@@ -39,12 +39,12 @@ function App() {
 
   const currentPage = useMemo(
     () => pages[currentPageIndex] || pages[0],
-    [pages, currentPageIndex]
+    [pages, currentPageIndex],
   );
 
   const [fontSize, setFontSize] = useState(20);
   const [aspectRatio, setAspectRatio] = useState(aspectRatioOptions[0]);
-  const [pageBg, setPageBg] = useState('rain');
+  const [pageBg, setPageBg] = useState("rain");
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,7 +52,7 @@ function App() {
   const [isOverflowing, setIsOverflowing] = useState(false);
   const previewRef = useRef<HTMLDivElement>(null);
 
-  const pageTextColor = getContrastColor(pageBg, 'ui');
+  const pageTextColor = getContrastColor(pageBg, "ui");
   const quoteBackgroundColor = getQuoteBackgroundColor(pageBg);
   const quoteTextColor = getContrastColor(quoteBackgroundColor);
 
@@ -115,11 +115,11 @@ function App() {
 
   const handleDownload = async () => {
     if (!currentPage.text.trim()) {
-      console.log('No hay texto para descargar');
+      console.log("No hay texto para descargar");
       return;
     }
 
-    console.log('Iniciando descarga...');
+    console.log("Iniciando descarga...");
     setIsDownloading(true);
     setShowPreview(true);
 
@@ -128,13 +128,13 @@ function App() {
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       if (!previewRef.current) {
-        console.error('previewRef.current (Elemento de Captura) es null');
+        console.error("previewRef.current (Elemento de Captura) es null");
         return;
       }
 
-      console.log('Capturando con html2canvas...');
+      console.log("Capturando con html2canvas...");
 
-      const isGradient = quoteBackgroundColor.startsWith('linear-gradient');
+      const isGradient = quoteBackgroundColor.startsWith("linear-gradient");
 
       // Usamos offsetWidth/Height para ignorar transformaciones si la animación sigue corriendo.
       const width = previewRef.current.offsetWidth;
@@ -155,39 +155,39 @@ function App() {
         imageTimeout: 0, // Esperar indefinidamente a que carguen las imágenes
         onclone: (_clonedDoc, element) => {
           // Mejorar el renderizado de fuentes en el clon
-          element.style.setProperty('-webkit-font-smoothing', 'antialiased');
-          element.style.setProperty('-moz-osx-font-smoothing', 'grayscale');
-          element.style.textRendering = 'optimizeLegibility';
+          element.style.setProperty("-webkit-font-smoothing", "antialiased");
+          element.style.setProperty("-moz-osx-font-smoothing", "grayscale");
+          element.style.textRendering = "optimizeLegibility";
 
           // Posicionamos el clon en (0,0) sin modificar su altura.
           // Dejar que el CSS (height: 80vh) compute el alto naturalmente
           // evita que el flex layout desplace el AuthorFooter fuera del área capturada.
           // html2canvas usa `height: rect.height` para saber cuánto capturar.
-          element.style.position = 'fixed';
-          element.style.top = '0';
-          element.style.left = '0';
+          element.style.position = "fixed";
+          element.style.top = "0";
+          element.style.left = "0";
           element.style.width = `${width}px`;
           element.style.height = `${height}px`;
           // No sobreescribimos height — el CSS lo maneja igual que en pantalla
-          element.style.maxWidth = 'none';
-          element.style.maxHeight = 'none';
-          element.style.aspectRatio = 'auto';
-          element.style.borderColor = 'transparent'; // Mantenemos el borde pero invisible para evitar cambios de layout
+          element.style.maxWidth = "none";
+          element.style.maxHeight = "none";
+          element.style.aspectRatio = "auto";
+          element.style.borderColor = "transparent"; // Mantenemos el borde pero invisible para evitar cambios de layout
           element.style.background = quoteBackgroundColor;
-          element.style.animation = 'none';
-          element.style.transform = 'none';
+          element.style.animation = "none";
+          element.style.transform = "none";
         },
       });
 
-      console.log('Canvas creado, generando imagen...');
-      const link = document.createElement('a');
+      console.log("Canvas creado, generando imagen...");
+      const link = document.createElement("a");
       const date = new Date();
-      link.download = `Escrito-${currentPage.author || 'autor-desconocido'}-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium', timeStyle: 'medium' }).format(date)}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.download = `Escrito-${currentPage.author || "autor-desconocido"}-${Intl.DateTimeFormat("es-VE", { dateStyle: "medium", timeStyle: "medium" }).format(date)}.png`;
+      link.href = canvas.toDataURL("image/png");
       link.click();
-      console.log('Descarga iniciada');
+      console.log("Descarga iniciada");
     } catch (error) {
-      console.error('Error al descargar:', error);
+      console.error("Error al descargar:", error);
     } finally {
       // Esperar un momento antes de ocultar la preview
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -198,11 +198,11 @@ function App() {
 
   const handleDownloadAll = async () => {
     if (pages.length === 0 || !pages.some((p) => p.text.trim())) {
-      console.log('No hay texto para descargar');
+      console.log("No hay texto para descargar");
       return;
     }
 
-    console.log('Iniciando descarga de todas las páginas...');
+    console.log("Iniciando descarga de todas las páginas...");
     setIsDownloading(true);
     setShowPreview(true);
 
@@ -224,7 +224,7 @@ function App() {
         const height = previewRef.current.offsetHeight;
 
         const canvas = await html2canvas(previewRef.current, {
-          backgroundColor: quoteBackgroundColor.startsWith('linear-gradient')
+          backgroundColor: quoteBackgroundColor.startsWith("linear-gradient")
             ? null
             : quoteBackgroundColor,
           logging: false,
@@ -237,39 +237,39 @@ function App() {
           scrollY: 0,
           imageTimeout: 0,
           onclone: (_clonedDoc, element) => {
-            element.style.setProperty('-webkit-font-smoothing', 'antialiased');
-            element.style.setProperty('-moz-osx-font-smoothing', 'grayscale');
-            element.style.textRendering = 'optimizeLegibility';
-            element.style.position = 'fixed';
-            element.style.top = '0';
-            element.style.left = '0';
+            element.style.setProperty("-webkit-font-smoothing", "antialiased");
+            element.style.setProperty("-moz-osx-font-smoothing", "grayscale");
+            element.style.textRendering = "optimizeLegibility";
+            element.style.position = "fixed";
+            element.style.top = "0";
+            element.style.left = "0";
             element.style.width = `${width}px`;
             element.style.height = `${height}px`;
-            element.style.maxWidth = 'none';
-            element.style.maxHeight = 'none';
-            element.style.aspectRatio = 'auto';
-            element.style.borderColor = 'transparent';
+            element.style.maxWidth = "none";
+            element.style.maxHeight = "none";
+            element.style.aspectRatio = "auto";
+            element.style.borderColor = "transparent";
             element.style.background = quoteBackgroundColor;
-            element.style.animation = 'none';
-            element.style.transform = 'none';
+            element.style.animation = "none";
+            element.style.transform = "none";
           },
         });
 
         // Convert canvas to blob and add to ZIP
         const blob = await new Promise<Blob | null>((resolve) =>
-          canvas.toBlob(resolve, 'image/png')
+          canvas.toBlob(resolve, "image/png"),
         );
         if (blob) {
-          const numberStr = (i + 1).toString().padStart(2, '0');
+          const numberStr = (i + 1).toString().padStart(2, "0");
           zip.file(`Escrito-${numberStr}.png`, blob);
         }
       }
 
-      console.log('Generando archivo ZIP...');
-      const content = await zip.generateAsync({ type: 'blob' });
-      const link = document.createElement('a');
+      console.log("Generando archivo ZIP...");
+      const content = await zip.generateAsync({ type: "blob" });
+      const link = document.createElement("a");
       const date = new Date();
-      link.download = `Escritos-${Intl.DateTimeFormat('es-VE', { dateStyle: 'medium' }).format(date)}.zip`;
+      link.download = `Escritos-${Intl.DateTimeFormat("es-VE", { dateStyle: "medium" }).format(date)}.zip`;
       link.href = URL.createObjectURL(content);
       link.click();
       URL.revokeObjectURL(link.href);
@@ -277,7 +277,7 @@ function App() {
       // Restore original page
       setCurrentPageIndex(originalIndex);
     } catch (error) {
-      console.error('Error al descargar ZIP:', error);
+      console.error("Error al descargar ZIP:", error);
     } finally {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setShowPreview(false);
@@ -286,31 +286,31 @@ function App() {
   };
 
   const currentBgOption = pageBackgroundOptions.find(
-    (opt) => opt.value === pageBg
+    (opt) => opt.value === pageBg,
   );
   const isMesh = !!currentBgOption?.meshColors;
 
-  const formattedTime = Intl.DateTimeFormat('es-VE', {
-    dateStyle: 'medium',
+  const formattedTime = Intl.DateTimeFormat("es-VE", {
+    dateStyle: "medium",
   }).format(currentTime);
 
   return (
     <div
       className="min-h-screen relative flex flex-col items-center justify-center overflow-hidden transition-colors duration-500"
       style={{
-        background: pageBg === 'rain' || isMesh ? '#0f172a' : pageBg,
+        background: pageBg === "rain" || isMesh ? "#0f172a" : pageBg,
       }}
     >
-      {pageBg === 'rain' && <RainBackground />}
+      {pageBg === "rain" && <RainBackground />}
       {isMesh && <MeshBackground colors={currentBgOption.meshColors} />}
 
       {/* Boton de Menu */}
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className={`fixed top-4 left-4 z-50 p-2 hover:shadow-md rounded-lg transition-all ${
-          pageBg === 'rain' || getContrastColor(pageBg, 'ui') === '#e2e8f0'
-            ? 'hover:bg-slate-700/80 text-white/70 hover:text-white'
-            : 'hover:bg-black/10 text-slate-700 hover:text-black'
+          pageBg === "rain" || getContrastColor(pageBg, "ui") === "#e2e8f0"
+            ? "hover:bg-slate-700/80 text-white/70 hover:text-white"
+            : "hover:bg-black/10 text-slate-700 hover:text-black"
         }`}
       >
         {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

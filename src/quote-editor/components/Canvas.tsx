@@ -3,7 +3,7 @@ import { AuthorFooter } from './AuthorFooter';
 import { X, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { AspectRatioOption, QuotePage } from '../types';
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 
 interface CanvasProps {
   currentPage: QuotePage;
@@ -74,14 +74,14 @@ function Canvas({
   }, [currentPage.textVerticalAlign]);
 
   // Auto-ajusta altura del textarea y comprueba desbordamiento contra el div contenedor
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkHeightAndOverflow = () => {
       const textarea = textareaRef.current;
       const lienzo = lienzoRef.current;
 
       if (textarea && lienzo) {
-        // 1. Resetear a "auto" para que scrollHeight refleje el contenido real
-        textarea.style.height = 'auto';
+        // 1. Resetear la altura a 0 para que scrollHeight refleje el contenido real sin causar saltos de scroll
+        textarea.style.height = '0px';
         const contentHeight = textarea.scrollHeight;
         // 2. Aplicar esa altura al textarea (crece con el contenido)
         textarea.style.height = `${contentHeight}px`;
@@ -93,21 +93,25 @@ function Canvas({
       }
     };
 
-    setTimeout(() => {
-      checkHeightAndOverflow();
-    }, 300);
-    // Pequeño retardo para asegurar que la fuente se haya aplicado
-    const timer = setTimeout(checkHeightAndOverflow, 100);
+    // Ejecutar inmediatamente para evitar el parpadeo y salto visual
+    checkHeightAndOverflow();
+
+    // Retardos para asegurar ajustes si la fuente carga de forma asíncrona
+    const timer1 = setTimeout(checkHeightAndOverflow, 100);
+    const timer2 = setTimeout(checkHeightAndOverflow, 300);
+
     window.addEventListener('resize', checkHeightAndOverflow);
     return () => {
       window.removeEventListener('resize', checkHeightAndOverflow);
-      clearTimeout(timer);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
   }, [
     currentPage.text,
     fontSize,
     currentPage.textHorizontalAlign,
     currentPage.textVerticalAlign,
+    currentPage.quoteFontFamily,
     aspectRatio,
     setIsOverflowing,
   ]);
@@ -221,7 +225,7 @@ function Canvas({
                 value={currentPage.text}
                 onChange={handleTextChange}
                 placeholder="Comienza a escribir..."
-                className={`scrollbar-hide z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
+                className={`scrollbar-hide overflow-hidden z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none placeholder:text-slate-500/80 ${
                   isOverflowing ? 'text-red-500' : ''
                 }`}
                 style={{
