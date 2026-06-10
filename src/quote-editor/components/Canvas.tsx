@@ -24,8 +24,6 @@ interface CanvasProps {
   setIsOverflowing: (overflow: boolean) => void;
 }
 
-
-
 function Canvas({
   currentPage,
   updatePage,
@@ -103,6 +101,7 @@ function Canvas({
             fontSize={fontSize}
             direction={direction}
             aspectRatio={aspectRatio}
+            quoteBackgroundColor={quoteBackgroundColor}
             pageTextColor={pageTextColor}
             formattedTime={formattedTime}
             isOverflowing={isOverflowing}

@@ -13,6 +13,7 @@ interface CanvasPageProps {
   direction: number;
   aspectRatio: AspectRatioOption;
   pageTextColor: string;
+  quoteBackgroundColor: string;
   formattedTime: string;
   isOverflowing: boolean;
   setIsOverflowing: (overflow: boolean) => void;
@@ -26,6 +27,7 @@ export const CanvasPage = ({
   direction,
   aspectRatio,
   pageTextColor,
+  quoteBackgroundColor,
   formattedTime,
   isOverflowing,
   setIsOverflowing,
@@ -125,7 +127,7 @@ export const CanvasPage = ({
         scale: { type: 'tween', ease: 'easeInOut', duration: 0.2 },
         opacity: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
       }}
-      className="flex flex-col items-center z-50 shadow-[0_0_5px_rgba(127,127,127)] transition-all duration-200 relative group"
+      className="flex flex-col items-center z-50 shadow-[0_0_2px_rgba(127,127,127)] transition-all duration-200 relative group"
       style={{
         borderColor: `${pageTextColor}1a`,
         aspectRatio: aspectRatio.value,
@@ -135,8 +137,12 @@ export const CanvasPage = ({
         padding: '2rem',
       }}
     >
-      <div className="absolute -top-20 left-1/2 -translate-x-1/2 z-60 flex flex-col items-center gap-2">
-        <EditorToolbar pageTextColor={pageTextColor} editorRef={editorRef} />
+      <div className="absolute -top-18 left-1/2 -translate-x-1/2 z-60 flex flex-col items-center gap-2">
+        <EditorToolbar
+          pageTextColor={pageTextColor}
+          quoteBackgroundColor={quoteBackgroundColor}
+          editorRef={editorRef}
+        />
         <div
           className="hidden md:block opacity-50 text-[10px] uppercase font-mono tracking-widest"
           style={{ color: pageTextColor }}

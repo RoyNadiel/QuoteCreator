@@ -3,14 +3,23 @@ import { Bold, Italic, Underline, Highlighter } from 'lucide-react';
 
 interface EditorToolbarProps {
   pageTextColor: string;
+  quoteBackgroundColor: string;
   editorRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) {
+export function EditorToolbar({
+  pageTextColor,
+  quoteBackgroundColor,
+  editorRef,
+}: EditorToolbarProps) {
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
 
+  const hoverBackgroundClass =
+    pageTextColor === '#FFFFFF'
+      ? 'hover:bg-[#FFFFFF20]'
+      : 'hover:bg-[#FFFFFF20]';
   useEffect(() => {
     const syncCaretStyles = () => {
       const selection = window.getSelection();
@@ -79,7 +88,11 @@ export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) 
 
   return (
     <div
-      className="flex items-center bg-slate-900/90 text-white px-3 py-1 rounded-xl border border-slate-700/50 shadow-xl backdrop-blur-sm gap-1.5 z-60"
+      className="flex items-center px-3 py-1 rounded-xl shadow-sm backdrop-blur-sm gap-1.5 z-60"
+      style={{
+        background: quoteBackgroundColor,
+        color: pageTextColor,
+      }}
       onMouseDown={(e) => {
         // Prevent losing focus from contentEditable
         e.preventDefault();
@@ -88,7 +101,7 @@ export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) 
       <button
         onClick={() => toggleStyle('bold')}
         className={`p-2 rounded-lg transition-colors cursor-pointer ${
-          isBold ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-slate-800 text-slate-300'
+          isBold ? `bg-sky-300 shadow-sm` : hoverBackgroundClass
         }`}
         title="Negrita"
       >
@@ -97,7 +110,7 @@ export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) 
       <button
         onClick={() => toggleStyle('italic')}
         className={`p-2 rounded-lg transition-colors cursor-pointer ${
-          isItalic ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-slate-800 text-slate-300'
+          isItalic ? `bg-sky-300 shadow-sm` : hoverBackgroundClass
         }`}
         title="Cursiva"
       >
@@ -106,7 +119,7 @@ export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) 
       <button
         onClick={() => toggleStyle('underline')}
         className={`p-2 rounded-lg transition-colors cursor-pointer ${
-          isUnderline ? 'bg-sky-500 text-white shadow-sm' : 'hover:bg-slate-800 text-slate-300'
+          isUnderline ? `bg-sky-300 shadow-sm` : hoverBackgroundClass
         }`}
         title="Subrayado"
       >
@@ -116,10 +129,10 @@ export function EditorToolbar({ pageTextColor, editorRef }: EditorToolbarProps) 
       <div className="w-px h-5 bg-slate-700 mx-1" />
 
       <div
-        className="relative flex items-center justify-center p-2 hover:bg-slate-800 rounded-lg transition-colors overflow-hidden cursor-pointer"
+        className={`relative flex items-center justify-center p-2 ${hoverBackgroundClass} rounded-lg transition-colors overflow-hidden cursor-pointer`}
         title="Color del texto"
       >
-        <Highlighter className="w-4 h-4 text-slate-300" />
+        <Highlighter className={`w-4 h-4 ${pageTextColor}`} />
         <input
           type="color"
           onChange={(e) => applyColor(e.target.value)}
