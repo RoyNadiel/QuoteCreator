@@ -257,7 +257,7 @@ export const Sidebar = ({
           </div>
         </div>
 
-        <div>
+<div>
           <div className="flex items-center gap-2 mb-4">
             <Layout className="w-5 h-5" />
             <h2 className="text-lg font-medium">Formato</h2>

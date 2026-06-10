@@ -1,10 +1,10 @@
 import { DecorativeSidebars } from './DecorativeSidebars';
 import { AuthorFooter } from './AuthorFooter';
-import { X, AlertCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 import type { AspectRatioOption, QuotePage } from '../types';
-import { useRef, useEffect, useLayoutEffect, useMemo } from 'react';
-import { FloatingToolbar } from './FloatingToolbar';
+import { useMemo } from 'react';
+import { CanvasPage } from './CanvasPage';
 
 interface CanvasProps {
   currentPage: QuotePage;
@@ -24,6 +24,8 @@ interface CanvasProps {
   setIsOverflowing: (overflow: boolean) => void;
 }
 
+
+
 function Canvas({
   currentPage,
   updatePage,
@@ -41,10 +43,6 @@ function Canvas({
   isOverflowing,
   setIsOverflowing,
 }: CanvasProps) {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const lienzoRef = useRef<HTMLDivElement>(null);
-  const lastHtml = useRef(currentPage.text);
-
   const depthVariants = {
     enter: (direction: number) => ({
       scale: direction > 0 ? 0.95 : 1.05,
@@ -75,64 +73,6 @@ function Canvas({
     }
   }, [currentPage.textVerticalAlign]);
 
-  const checkHeightAndOverflow = () => {
-    const editor = editorRef.current;
-    const lienzo = lienzoRef.current;
-
-    if (editor && lienzo) {
-      const contentHeight = editor.scrollHeight;
-      const hasOverflow = contentHeight > lienzo.clientHeight;
-      setIsOverflowing(hasOverflow);
-      return hasOverflow;
-    }
-    return false;
-  };
-
-  useLayoutEffect(() => {
-    checkHeightAndOverflow();
-
-    const timer1 = setTimeout(checkHeightAndOverflow, 100);
-    const timer2 = setTimeout(checkHeightAndOverflow, 300);
-
-    window.addEventListener('resize', checkHeightAndOverflow);
-    return () => {
-      window.removeEventListener('resize', checkHeightAndOverflow);
-      clearTimeout(timer1);
-      clearTimeout(timer2);
-    };
-  }, [
-    currentPage.text,
-    fontSize,
-    currentPage.textHorizontalAlign,
-    currentPage.textVerticalAlign,
-    currentPage.quoteFontFamily,
-    aspectRatio,
-    setIsOverflowing,
-  ]);
-
-  // Sincronizar contenido si cambia externamente o se cambia de página
-  useEffect(() => {
-    if (editorRef.current && currentPage.text !== lastHtml.current) {
-      editorRef.current.innerHTML = currentPage.text;
-      lastHtml.current = currentPage.text;
-    }
-  }, [currentPage.text]);
-
-  const handleTextChange = () => {
-    const editor = editorRef.current;
-    if (!editor) return;
-
-    const newValue = editor.innerHTML;
-
-    // Check overflow
-    checkHeightAndOverflow();
-
-    if (newValue !== lastHtml.current) {
-      lastHtml.current = newValue;
-      updatePage({ text: newValue });
-    }
-  };
-
   return (
     <>
       {/* ── LIENZO EDITOR ── */}
@@ -156,75 +96,19 @@ function Canvas({
         </h2>
 
         <AnimatePresence mode="wait" custom={direction}>
-          <motion.section
+          <CanvasPage
             key={currentPage.id}
-            custom={direction}
-            variants={depthVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              scale: { type: 'tween', ease: 'easeInOut', duration: 0.2 },
-              opacity: { type: 'tween', ease: 'easeInOut', duration: 0.3 },
-            }}
-            className="flex flex-col items-center z-50 shadow-[0_0_5px_rgba(127,127,127)] transition-all duration-200 relative group"
-            style={{
-              borderColor: `${pageTextColor}1a`,
-              aspectRatio: aspectRatio.value,
-              height: '80vh',
-              maxHeight: '80vh',
-              maxWidth: '90vw',
-              padding: '2rem',
-            }}
-          >
-            <div
-              className="absolute hidden md:block -top-8 opacity-50 left-1/2 -translate-x-1/2 text-xs uppercase font-mono tracking-widest z-60"
-              style={{ color: pageTextColor }}
-            >
-              {Intl.DateTimeFormat('es-VE', {
-                timeStyle: 'long',
-              }).format(new Date())}
-            </div>
-            <div
-              ref={lienzoRef}
-              className={`flex w-full flex-1 flex-col ${verticalJustify} overflow-hidden relative`}
-            >
-              <FloatingToolbar containerRef={lienzoRef} />
-              <div
-                ref={editorRef}
-                contentEditable
-                suppressContentEditableWarning
-                onInput={handleTextChange}
-                onBlur={handleTextChange}
-                data-placeholder="Comienza a escribir..."
-                className={`scrollbar-hide overflow-hidden z-20 flex w-full resize-none flex-col bg-transparent leading-relaxed transition-colors duration-300 outline-none ${
-                  isOverflowing ? 'text-red-500' : ''
-                }`}
-                style={{
-                  fontFamily: currentPage.quoteFontFamily,
-                  fontSize: `${fontSize}px`,
-                  textAlign: currentPage.textHorizontalAlign,
-                  color: isOverflowing ? '#ef4444' : pageTextColor,
-                  minHeight: `${fontSize * 1.5}px`,
-                }}
-              />
-            </div>
-            {isOverflowing && (
-              <div className="absolute top-2 right-2 flex items-center gap-1.5 text-red-500 bg-red-500/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-red-500/20 text-[10px] font-semibold animate-pulse z-30 uppercase tracking-wider">
-                <AlertCircle className="w-3 h-3" />
-                <span>Límite de Espacio</span>
-              </div>
-            )}
-            <AuthorFooter
-              author={currentPage.author}
-              autorFontFamily={currentPage.autorFontFamily}
-              fontSize={fontSize}
-              timeString={formattedTime}
-              color={pageTextColor}
-              borderColor={`${pageTextColor}1a`}
-              showDate={currentPage.showDate}
-            />
-          </motion.section>
+            page={currentPage}
+            updatePage={updatePage}
+            fontSize={fontSize}
+            direction={direction}
+            aspectRatio={aspectRatio}
+            pageTextColor={pageTextColor}
+            formattedTime={formattedTime}
+            isOverflowing={isOverflowing}
+            setIsOverflowing={setIsOverflowing}
+            depthVariants={depthVariants}
+          />
         </AnimatePresence>
       </div>
 
